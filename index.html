@@ -1,0 +1,3290 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jelly Arcade - ร้านแอปพรีเมียม (Demo)</title>
+
+  <!-- Google Fonts: Fredoka (Logo), Mitr & Prompt (Cute Rounded Thai UI) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Mitr:wght@400;500;600&family=Prompt:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            logo: ['Fredoka', 'Mitr', 'sans-serif'],
+            display: ['Mitr', 'Prompt', 'sans-serif'],
+            sans: ['Prompt', 'sans-serif'],
+          },
+          colors: {
+            jelly: {
+              deep: '#31145E',
+              purple: '#6227B8',
+              violet: '#8F4EEB',
+              soft: '#F3EAFF',
+              mint: '#8CF6E0',
+              mintLight: '#C7FFF3',
+            },
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    /* ============================================================
+       JELLY ARCADE VISUAL THEME & GLOSSY 3D TOKENS
+       ============================================================ */
+    body {
+      font-family: 'Prompt', sans-serif;
+      background: linear-gradient(180deg, #EFE4FF 0%, #F7F1FF 48%, #EAD8FF 100%);
+      color: #31145E;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Glossy White Card */
+    .jelly-card {
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(250, 245, 255, 0.94) 100%);
+      border: 2px solid rgba(255, 255, 255, 0.95);
+      border-radius: 1.5rem;
+      box-shadow:
+        0 10px 25px -8px rgba(98, 39, 184, 0.16),
+        inset 0 2px 0 rgba(255, 255, 255, 1);
+    }
+
+    /* Deep Purple Glossy Promo / Summary Card */
+    .jelly-dark-card {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(135deg, #4D1996 0%, #6C2BD9 52%, #501B9C 100%);
+      border: 2px solid rgba(255, 255, 255, 0.35);
+      box-shadow:
+        0 14px 30px -10px rgba(74, 25, 148, 0.45),
+        inset 0 2px 1px rgba(255, 255, 255, 0.32);
+    }
+
+    .jelly-dark-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 18% 15%, rgba(255, 255, 255, 0.22) 0%, transparent 40%),
+        radial-gradient(circle at 85% 90%, rgba(140, 246, 224, 0.18) 0%, transparent 42%);
+      pointer-events: none;
+    }
+
+    /* Glossy Mint Jelly CTA Button */
+    .jelly-btn-mint {
+      background: linear-gradient(180deg, #C7FFF3 0%, #8CF6E0 55%, #6FEAD2 100%);
+      color: #2B1055;
+      border: 2px solid rgba(255, 255, 255, 0.85);
+      box-shadow:
+        0 5px 0 #4DCBB6,
+        0 10px 18px -6px rgba(77, 203, 182, 0.55),
+        inset 0 2px 2px rgba(255, 255, 255, 0.9);
+      transition: transform 0.14s ease, box-shadow 0.14s ease, filter 0.14s ease;
+    }
+
+    .jelly-btn-mint:hover {
+      filter: brightness(1.03);
+      transform: translateY(-1px);
+    }
+
+    .jelly-btn-mint:active {
+      transform: translateY(3px);
+      box-shadow:
+        0 2px 0 #4DCBB6,
+        0 5px 10px -4px rgba(77, 203, 182, 0.45),
+        inset 0 2px 2px rgba(255, 255, 255, 0.85);
+    }
+
+    /* Purple Jelly Button */
+    .jelly-btn-purple {
+      background: linear-gradient(180deg, #8B4BF0 0%, #6828C9 100%);
+      color: #FFFFFF;
+      border: 2px solid rgba(255, 255, 255, 0.35);
+      box-shadow:
+        0 4px 0 #461790,
+        0 8px 16px -6px rgba(98, 39, 184, 0.5),
+        inset 0 2px 1px rgba(255, 255, 255, 0.35);
+      transition: transform 0.14s ease, box-shadow 0.14s ease;
+    }
+
+    .jelly-btn-purple:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 #461790;
+    }
+
+    /* Pastel Category Pills */
+    .cat-pill {
+      border: 2px solid rgba(255, 255, 255, 0.9);
+      box-shadow:
+        0 5px 12px -4px rgba(98, 39, 184, 0.18),
+        inset 0 2px 2px rgba(255, 255, 255, 0.85);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .cat-pill:hover {
+      transform: translateY(-2px);
+      box-shadow:
+        0 8px 16px -4px rgba(98, 39, 184, 0.24),
+        inset 0 2px 2px rgba(255, 255, 255, 0.95);
+    }
+
+    .cat-pill:active {
+      transform: translateY(1px);
+    }
+
+    .cat-mint {
+      background: linear-gradient(180deg, #D5FFF5 0%, #9AF6E2 100%);
+    }
+
+    .cat-pink {
+      background: linear-gradient(180deg, #FFE4FB 0%, #F4C4FA 100%);
+    }
+
+    .cat-cyan {
+      background: linear-gradient(180deg, #D8FAFF 0%, #A2ECFC 100%);
+    }
+
+    /* Floating Bottom Dock Nav */
+    .jelly-dock {
+      background: linear-gradient(180deg, #7434D4 0%, #581EA8 100%);
+      border: 2px solid rgba(255, 255, 255, 0.32);
+      box-shadow:
+        0 14px 32px -6px rgba(61, 18, 122, 0.55),
+        inset 0 2px 1px rgba(255, 255, 255, 0.3);
+    }
+
+    .nav-pill-active {
+      background: linear-gradient(180deg, #C7FFF3 0%, #8CF6E0 100%);
+      color: #2E115A !important;
+      box-shadow:
+        0 4px 10px -2px rgba(0, 0, 0, 0.2),
+        inset 0 2px 2px rgba(255, 255, 255, 0.95);
+    }
+
+    /* Floating Animation */
+    @keyframes floatSlow {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-7px); }
+    }
+    .animate-float {
+      animation: floatSlow 3.4s ease-in-out infinite;
+    }
+
+    @keyframes popIn {
+      0% { opacity: 0; transform: scale(0.92) translateY(8px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .animate-pop {
+      animation: popIn 0.24s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    /* Hide scrollbar cleanly where needed */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+
+<body class="selection:bg-purple-200 selection:text-purple-900">
+
+  <!-- ============================================================
+       SPLASH LOADING SCREEN (หน้าโหลดเข้าเว็บ -> ป๊อปอัพต้อนรับ -> หน้าเว็บหลัก)
+       ============================================================ -->
+  <div id="splashLoader"
+    class="fixed inset-0 z-[70] flex flex-col items-center justify-center p-6 transition-opacity duration-500"
+    style="background: radial-gradient(circle at 50% 25%, #8F4EEB 0%, #5F24B8 52%, #36136B 100%);">
+    <div class="w-full max-w-xs flex flex-col items-center text-center space-y-5">
+      <div id="splashMascotSlot" class="w-36 h-32 animate-float"></div>
+
+      <div class="space-y-1">
+        <h1 class="font-logo text-3xl sm:text-4xl font-bold text-white tracking-tight drop-shadow">Jelly Arcade</h1>
+        <p id="splashStatusText" class="font-display text-sm text-purple-100">กำลังโหลดร้านแอปพรีเมียม...</p>
+      </div>
+
+      <div class="w-full space-y-2">
+        <div class="w-full h-3.5 rounded-full bg-white/20 border border-white/35 p-0.5 overflow-hidden shadow-inner">
+          <div id="splashProgressBar"
+            class="h-full rounded-full bg-gradient-to-r from-[#C7FFF3] via-[#8CF6E0] to-[#F6C9FB] transition-all duration-150"
+            style="width: 12%;"></div>
+        </div>
+        <div class="flex items-center justify-between text-xs text-purple-200 font-display px-1">
+          <span>กำลังเตรียมหน้าร้าน (Demo)</span>
+          <span id="splashPercentText" class="font-bold text-[#C7FFF3]">12%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       FLOATING CUTE GEAR BUTTON (สลับโหมดหน้าร้าน / หลังบ้าน Admin)
+       ============================================================ -->
+  <button id="adminToggleBtn" type="button" onclick="toggleAppMode()"
+    title="เข้าสู่ระบบหลังบ้าน (Admin Demo)" aria-label="สลับโหมดหลังบ้าน"
+    class="fixed top-3 right-3 sm:top-4 sm:right-4 z-50 w-11 h-11 rounded-full bg-white/90 hover:bg-white text-[#5B21B6] border-2 border-purple-200 shadow-lg hover:scale-105 active:scale-95 transition flex items-center justify-center">
+    <svg id="adminToggleIcon" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+      <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+    </svg>
+  </button>
+
+  <!-- ============================================================
+       MAIN APP SHELL
+       ============================================================ -->
+  <div class="min-h-screen flex flex-col">
+
+    <!-- ==========================================================
+         CUSTOMER STOREFRONT VIEW
+         ========================================================== -->
+    <div id="customerView" class="w-full flex-1 flex flex-col pb-28">
+
+      <!-- TOP BANNER HEADER (วงสีแดง: แสดงรูปแบนเนอร์หลักของร้าน) -->
+      <header class="relative w-full max-w-4xl mx-auto sm:mt-3 rounded-b-[2rem] sm:rounded-[2.2rem] overflow-hidden shadow-lg bg-[#4A1994]">
+        <button type="button" onclick="navigateTo('home')" class="block w-full focus:outline-none group" aria-label="กลับหน้าหลัก Jelly Arcade">
+          <img src="https://i.postimg.cc/jSXRfvS8/180CDEB6-A8FC-4E80-8A04-235956C65240.png"
+            alt="Jelly Arcade แอปพรีเมียม"
+            onerror="this.onerror=null; this.src='https://placehold.co/1200x480/5F24B8/FFFFFF?text=Jelly+Arcade';"
+            class="w-full h-auto max-h-[260px] sm:max-h-[340px] object-cover block transition duration-300 group-hover:brightness-[1.03]" />
+        </button>
+      </header>
+
+      <!-- ========================================================
+           DYNAMIC CUSTOMER PAGE CONTENT
+           ======================================================== -->
+      <main id="customerPages" class="flex-1 w-full max-w-4xl mx-auto px-4 sm:px-6 mt-4 sm:mt-5 relative z-20 space-y-6">
+
+        <!-- Prominent Back Navigation Bar (ปุ่มย้อนกลับในจุดที่มองเห็นง่ายเหนือเนื้อหาหน้าย่อย) -->
+        <div id="headerSubpageBar" class="hidden flex items-center justify-between gap-3">
+          <button id="headerBackBtn" type="button" onclick="goBack()"
+            class="jelly-btn-purple px-4 sm:px-5 py-2 rounded-full font-display font-bold text-sm sm:text-base inline-flex items-center gap-2 shrink-0"
+            aria-label="ย้อนกลับ">
+            <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" stroke-width="2.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+            <span>ย้อนกลับ</span>
+          </button>
+          <span id="headerSubpageTitle"
+            class="px-3.5 py-1.5 rounded-full bg-white/95 text-[#4A1C88] border border-purple-200 font-display font-semibold text-xs sm:text-sm shadow-sm truncate">
+            รายละเอียดแอป
+          </span>
+        </div>
+
+        <!-- ------------------------------------------------------
+             PAGE 1: หน้าหลัก (HOME)
+             ------------------------------------------------------ -->
+        <section id="page-home" class="space-y-6">
+          <!-- Search Bar -->
+          <div class="relative">
+            <div class="jelly-card rounded-full p-1.5 pl-4 flex items-center gap-2 shadow-md">
+              <svg class="w-5 h-5 text-[#7A5AA8] shrink-0" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z"/>
+              </svg>
+              <input id="homeSearchInput" type="text" placeholder="ค้นหาแอป เช่น Stream Plus, Music Plus..."
+                oninput="handleSearchInput(this.value)"
+                class="w-full bg-transparent text-sm sm:text-base text-[#31145E] placeholder:text-[#967DBB] focus:outline-none py-1.5" />
+              <button id="clearSearchBtn" type="button" onclick="clearHomeSearch()"
+                class="hidden w-7 h-7 rounded-full bg-purple-100 text-[#5B21B6] hover:bg-purple-200 transition flex items-center justify-center text-xs font-bold shrink-0"
+                aria-label="ล้างคำค้นหา">
+                ✕
+              </button>
+              <button type="button" onclick="focusPopularList()"
+                class="jelly-btn-purple px-4 sm:px-5 py-2 rounded-full flex items-center justify-center shrink-0"
+                aria-label="ค้นหา">
+                <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Categories Section (วงสีเขียว: หมวดหมู่แอปต่างๆ ทั้งหมด กดแล้วเข้าหน้าการ์ด 1:1) -->
+          <div class="space-y-3">
+            <div class="flex items-center justify-between px-1">
+              <h2 class="font-display font-bold text-lg sm:text-xl text-[#31145E] flex items-center gap-2">
+                <span class="w-6 h-6 rounded-lg bg-gradient-to-br from-[#8B4BF0] to-[#5E21B8] text-white flex items-center justify-center text-xs shadow">⊞</span>
+                <span>หมวดหมู่</span>
+              </h2>
+              <span id="activeCategoryHint" class="text-xs text-[#6E5596]">แตะเพื่อเข้าดูแต่ละหมวด</span>
+            </div>
+
+            <div id="categoryPillsContainer" class="grid grid-cols-3 gap-3 sm:gap-4">
+              <!-- Rendered by JS -->
+            </div>
+          </div>
+
+          <!-- Promo Apps Carousel (วงสีดำ: รายการที่มีโปรพร้อมปุ่มสั่งซื้อ) -->
+          <div class="space-y-3">
+            <div class="flex items-center justify-between px-1">
+              <h2 class="font-display font-bold text-lg sm:text-xl text-[#31145E] flex items-center gap-2">
+                <span class="text-xl">🔥</span>
+                <span>รายการโปรโมชั่น</span>
+              </h2>
+              <span class="px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-600 font-display font-semibold text-xs">ราคาพิเศษ</span>
+            </div>
+
+            <div class="relative">
+              <div id="featuredBannerSlot">
+                <!-- Rendered by JS -->
+              </div>
+
+              <!-- Carousel Prev/Next Controls -->
+              <button type="button" onclick="stepBanner(-1)" aria-label="สไลด์ก่อนหน้า"
+                class="flex absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/85 hover:bg-white text-[#4A1C88] shadow-md items-center justify-center transition z-20">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.6" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+              </button>
+              <button type="button" onclick="stepBanner(1)" aria-label="สไลด์ถัดไป"
+                class="flex absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/85 hover:bg-white text-[#4A1C88] shadow-md items-center justify-center transition z-20">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.6" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+              </button>
+            </div>
+
+            <!-- Carousel Dots -->
+            <div id="featuredBannerDots" class="flex items-center justify-center gap-2"></div>
+          </div>
+
+          <!-- Recent Orders List (วงสีน้ำเงิน: รายการสั่งซื้อล่าสุด / สลับแสดงผลค้นหาเมื่อพิมพ์ค้นหาแอป) -->
+          <div id="popularAppsSection" class="space-y-3">
+            <div class="flex items-center justify-between gap-3 px-1 flex-wrap">
+              <h2 class="font-display font-bold text-lg sm:text-xl text-[#31145E] flex items-center gap-2">
+                <span id="popularListIcon" class="text-xl">🧾</span>
+                <span id="popularListTitle">รายการสั่งซื้อล่าสุด</span>
+              </h2>
+              <div class="flex items-center gap-2.5">
+                <button type="button" onclick="navigateTo('recent')"
+                  class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-purple-100 hover:bg-purple-200 text-xs font-display font-semibold text-[#4F2199] transition">
+                  🔍 ค้นหาออเดอร์
+                </button>
+                <button type="button" onclick="openInfoModal()"
+                  class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/85 border border-purple-200 text-xs font-medium text-[#5A3B8C] shadow-sm hover:bg-purple-50 transition">
+                  <span class="w-4 h-4 rounded-full border border-[#5A3B8C] flex items-center justify-center text-[10px] font-bold">i</span>
+                  ข้อมูลจำลอง
+                </button>
+              </div>
+            </div>
+
+            <div id="appsListContainer" class="grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-4">
+              <!-- Recent Orders (or Search Results) Rendered by JS -->
+            </div>
+          </div>
+        </section>
+
+        <!-- ------------------------------------------------------
+             PAGE 2: หน้าหมวดหมู่ (CATEGORY PAGE — การ์ดสินค้า 1:1 เฉพาะหมวดที่เลือก)
+             ------------------------------------------------------ -->
+        <section id="page-category" class="hidden space-y-5">
+          <div id="categoryHeaderCard" class="jelly-dark-card rounded-[2rem] p-5 sm:p-6 text-white flex items-center justify-between gap-4">
+            <div class="relative z-10 space-y-1">
+              <h2 id="categoryPageTitle" class="font-display font-bold text-2xl sm:text-3xl">หมวดดูหนัง</h2>
+              <p class="text-xs sm:text-sm text-purple-100">กดเลือกแอปเพื่อเข้าไปเลือกแพ็กเกจ 30 วัน / 90 วัน</p>
+            </div>
+            <div id="categoryPageIcon" class="relative z-10 text-4xl sm:text-5xl drop-shadow">🎬</div>
+          </div>
+
+          <div class="flex items-center justify-between gap-3 px-1">
+            <span id="categoryAppsCount" class="font-display font-bold text-base sm:text-lg text-[#31145E]">รายการแอปในหมวดนี้</span>
+            <button type="button" onclick="openInfoModal()"
+              class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/85 border border-purple-200 text-xs font-medium text-[#5A3B8C] shrink-0">
+              <span class="w-4 h-4 rounded-full border border-[#5A3B8C] flex items-center justify-center text-[10px] font-bold">i</span>
+              ข้อมูลจำลอง
+            </button>
+          </div>
+
+          <!-- 1:1 Square Product Cards Grid (เฉพาะหมวดหมู่ที่เลือก เว้นระยะไม่เบียดกัน) -->
+          <div id="categoryAppsGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-5">
+            <!-- Rendered by JS -->
+          </div>
+        </section>
+
+        <!-- ------------------------------------------------------
+             PAGE 3: รายละเอียดแอป & เลือกแพ็กเกจ (APP DETAIL)
+             ------------------------------------------------------ -->
+        <section id="page-detail" class="hidden space-y-5">
+          <!-- Hero App Card -->
+          <div id="detailHeroCard" class="jelly-dark-card rounded-[2rem] p-5 sm:p-6 text-white">
+            <!-- Rendered by JS -->
+          </div>
+
+          <!-- Package Selection -->
+          <div class="space-y-3">
+            <div class="flex items-center justify-between px-1">
+              <h2 class="font-display font-bold text-lg sm:text-xl text-[#31145E] flex items-center gap-2">
+                <span>👑</span>
+                <span>เลือกแพ็กเกจ</span>
+              </h2>
+              <span class="text-xs text-[#6E5596]">เลือกระยะเวลาที่ต้องการ</span>
+            </div>
+
+            <div id="detailPackagesGrid" class="grid grid-cols-2 gap-3 sm:gap-4">
+              <!-- Rendered by JS -->
+            </div>
+          </div>
+
+          <!-- Package Features -->
+          <div class="space-y-3">
+            <div class="flex items-center justify-between px-1">
+              <h2 class="font-display font-bold text-lg sm:text-xl text-[#31145E] flex items-center gap-2">
+                <span>📋</span>
+                <span>รายละเอียดแพ็กเกจ</span>
+              </h2>
+              <button type="button" onclick="openInfoModal()"
+                class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-white/85 border border-purple-200 text-xs font-medium text-[#5A3B8C]">
+                <span class="w-4 h-4 rounded-full border border-[#5A3B8C] flex items-center justify-center text-[10px] font-bold">i</span>
+                ข้อมูลจำลอง
+              </button>
+            </div>
+
+            <div id="detailFeaturesCard" class="jelly-card p-4 sm:p-5 divide-y divide-purple-100">
+              <!-- Rendered by JS -->
+            </div>
+          </div>
+
+          <!-- Total Summary & Add to Cart -->
+          <div class="space-y-3 pt-1">
+            <div class="jelly-card px-5 py-3.5 flex items-center justify-between">
+              <span class="font-display font-bold text-base sm:text-lg text-[#31145E]">ยอดรวม</span>
+              <span id="detailTotalPrice" class="font-display font-bold text-2xl sm:text-3xl text-[#31145E]">฿99</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <button type="button" onclick="addSelectedToCart(false)"
+                class="jelly-btn-mint w-full py-3.5 rounded-full font-display font-bold text-base sm:text-lg flex items-center justify-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                เพิ่มลงตะกร้า
+              </button>
+              <button type="button" onclick="addSelectedToCart(true)"
+                class="jelly-btn-purple w-full py-3.5 rounded-full font-display font-bold text-base sm:text-lg flex items-center justify-center gap-2">
+                ⚡ ซื้อทันที
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ------------------------------------------------------
+             PAGE 4: ตะกร้าสินค้า (CART PAGE)
+             ------------------------------------------------------ -->
+        <section id="page-cart" class="hidden space-y-5">
+          <div class="flex items-center justify-between px-1">
+            <h2 class="font-display font-bold text-xl sm:text-2xl text-[#31145E] flex items-center gap-2">
+              <span>🛒</span>
+              <span>ตะกร้าสินค้า</span>
+              <span id="cartItemCountLabel" class="text-sm font-normal text-[#6E5596]">(0 รายการ)</span>
+            </h2>
+            <button type="button" onclick="openInfoModal()"
+              class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-white/85 border border-purple-200 text-xs font-medium text-[#5A3B8C]">
+              <span class="w-4 h-4 rounded-full border border-[#5A3B8C] flex items-center justify-center text-[10px] font-bold">i</span>
+              ข้อมูลจำลอง
+            </button>
+          </div>
+
+          <!-- Cart Items -->
+          <div id="cartItemsContainer" class="space-y-3">
+            <!-- Rendered by JS -->
+          </div>
+
+          <!-- Cart Order Summary -->
+          <div id="cartSummaryBox" class="space-y-4">
+            <div class="jelly-dark-card rounded-[2rem] p-5 sm:p-6 text-white space-y-3">
+              <div class="relative z-10 flex items-center gap-2 font-display font-bold text-lg">
+                <span>🧾</span>
+                <span>สรุปคำสั่งซื้อ</span>
+              </div>
+              <div class="relative z-10 flex items-center justify-between text-sm sm:text-base text-purple-100 pb-3 border-b border-white/20">
+                <span id="cartSummaryCountText">ยอดรวมสินค้า (0 รายการ)</span>
+                <span id="cartSubtotalText" class="font-display font-semibold">฿0</span>
+              </div>
+              <div class="relative z-10 flex items-center justify-between pt-1">
+                <span class="font-display font-bold text-base sm:text-lg">ยอดชำระทั้งหมด</span>
+                <span id="cartGrandTotalText" class="font-display font-bold text-3xl text-[#FFF59D]">฿0</span>
+              </div>
+            </div>
+
+            <button id="goToCheckoutBtn" type="button" onclick="navigateTo('checkout')"
+              class="jelly-btn-mint w-full py-3.5 rounded-full font-display font-bold text-lg flex items-center justify-center gap-2">
+              <span>💳</span>
+              <span>ไปชำระเงิน</span>
+              <span>›</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- ------------------------------------------------------
+             PAGE 5: ชำระเงิน (CHECKOUT PAGE — กรอกชื่อลูกค้า + ไอดีไลน์รับสินค้า)
+             ------------------------------------------------------ -->
+        <section id="page-checkout" class="hidden space-y-5">
+          <!-- Step Bar -->
+          <div class="jelly-card rounded-full p-1.5 flex items-center justify-between gap-1 text-xs sm:text-sm font-display">
+            <button type="button" onclick="navigateTo('cart')"
+              class="flex-1 py-2 px-2 rounded-full bg-purple-100/80 text-[#5B21B6] font-semibold flex items-center justify-center gap-1 hover:bg-purple-200/80 transition">
+              <span>🛒</span>
+              <span class="truncate">ตะกร้า</span>
+            </button>
+            <span class="text-purple-400 font-bold">›</span>
+            <div class="flex-1 py-2 px-2 rounded-full bg-purple-100/80 text-[#5B21B6] font-semibold flex items-center justify-center gap-1">
+              <span>📋</span>
+              <span class="truncate">ตรวจสอบ</span>
+            </div>
+            <span class="text-purple-400 font-bold">›</span>
+            <div class="flex-1 py-2 px-2 rounded-full bg-gradient-to-r from-[#7C3AED] to-[#5B21B6] text-white font-semibold flex items-center justify-center gap-1 shadow">
+              <span>💳</span>
+              <span class="truncate">ชำระเงิน</span>
+            </div>
+          </div>
+
+          <!-- Total Banner -->
+          <div class="jelly-dark-card rounded-[2rem] p-5 sm:p-6 text-white flex items-center justify-between gap-4">
+            <div class="relative z-10 flex items-center gap-3">
+              <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-white/15 border border-white/25 flex items-center justify-center text-3xl sm:text-4xl shadow-inner">
+                🛍️
+              </div>
+              <div>
+                <p class="text-xs sm:text-sm text-purple-100">รายการสั่งซื้อ (<span id="checkoutItemsCount">0</span> รายการ)</p>
+                <p id="checkoutItemsPreview" class="font-display font-semibold text-sm sm:text-base line-clamp-1">Stream Plus</p>
+              </div>
+            </div>
+            <div class="relative z-10 text-right shrink-0">
+              <p class="text-xs sm:text-sm text-purple-200">ยอดชำระ</p>
+              <p id="checkoutTotalAmount" class="font-display font-bold text-3xl sm:text-4xl text-white">฿0</p>
+            </div>
+          </div>
+
+          <form id="checkoutForm" onsubmit="submitOrder(event)" class="space-y-4">
+            <!-- Bank Transfer Info -->
+            <div class="jelly-card p-4 sm:p-5 space-y-3">
+              <div class="flex items-center justify-between gap-2">
+                <h3 class="font-display font-bold text-base sm:text-lg text-[#31145E] flex items-center gap-2">
+                  <span class="w-8 h-8 rounded-xl bg-purple-100 text-[#6227B8] flex items-center justify-center">🏦</span>
+                  <span>โอนเงินผ่านธนาคาร</span>
+                </h3>
+                <span class="px-2.5 py-0.5 rounded-full bg-purple-100 text-[#5929A8] text-[11px] font-display font-semibold">ข้อมูลจำลอง</span>
+              </div>
+
+              <div class="jelly-dark-card rounded-2xl p-4 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div class="relative z-10 space-y-1">
+                  <p id="checkoutBankName" class="text-xs text-purple-200">ธนาคารจำลอง (Demo Bank)</p>
+                  <p id="checkoutAccountNumber" class="font-display font-bold text-xl sm:text-2xl tracking-wider bg-white text-[#31145E] inline-block px-3.5 py-1 rounded-xl shadow">
+                    xxx-x-1234-x
+                  </p>
+                  <p id="checkoutAccountName" class="text-xs text-purple-100">ชื่อบัญชี: บจก. เจลลี่ อาร์เคด (ข้อมูลจำลอง)</p>
+                </div>
+                <button type="button" onclick="copyBankAccount()"
+                  class="jelly-btn-mint px-4 py-2 rounded-full font-display font-bold text-sm flex items-center justify-center gap-1.5 relative z-10 shrink-0">
+                  📋 คัดลอก
+                </button>
+              </div>
+            </div>
+
+            <!-- Customer Name & LINE ID Inputs -->
+            <div class="jelly-card p-4 sm:p-5 space-y-4">
+              <div class="space-y-2">
+                <label for="customerNameInput" class="font-display font-bold text-base sm:text-lg text-[#31145E] flex items-center gap-2">
+                  <span class="w-8 h-8 rounded-xl bg-purple-100 text-[#6227B8] flex items-center justify-center text-sm">👤</span>
+                  <span>ชื่อลูกค้า</span>
+                </label>
+                <input id="customerNameInput" type="text" required
+                  placeholder="กรอกชื่อเล่นหรือชื่อลูกค้า เช่น คุณมิ้นท์"
+                  class="w-full px-4 py-3 rounded-2xl bg-purple-50/70 border-2 border-purple-200/80 focus:border-[#7C3AED] focus:bg-white focus:outline-none text-sm sm:text-base text-[#31145E] transition" />
+              </div>
+
+              <div class="space-y-2">
+                <label for="customerLineIdInput" class="font-display font-bold text-base sm:text-lg text-[#31145E] flex items-center gap-2">
+                  <span class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-sm font-bold">LINE</span>
+                  <span>ไอดีไลน์สำหรับรับสินค้า</span>
+                </label>
+                <input id="customerLineIdInput" type="text" required
+                  placeholder="กรอกไอดีไลน์ของคุณ เช่น @jelly.member หรือ line_id"
+                  class="w-full px-4 py-3 rounded-2xl bg-purple-50/70 border-2 border-purple-200/80 focus:border-[#7C3AED] focus:bg-white focus:outline-none text-sm sm:text-base text-[#31145E] transition" />
+                <p class="text-xs text-[#6E5596]">แอดมินจะจัดส่งข้อมูลแอปพรีเมียมและวิธีเข้าใช้งานให้ผ่าน LINE ID นี้ (โหมด Demo ยังไม่ส่งข้อความจริง)</p>
+              </div>
+            </div>
+
+            <!-- Slip Upload -->
+            <div class="jelly-card p-4 sm:p-5 space-y-3">
+              <div class="flex items-center justify-between gap-2">
+                <h3 class="font-display font-bold text-base sm:text-lg text-[#31145E] flex items-center gap-2">
+                  <span class="w-8 h-8 rounded-xl bg-purple-100 text-[#6227B8] flex items-center justify-center">🖼️</span>
+                  <span>แนบสลิปการโอนเงิน</span>
+                </h3>
+                <button type="button" onclick="useDemoSlip()"
+                  class="px-3 py-1 rounded-full bg-purple-100 hover:bg-purple-200 text-[#5B21B6] font-display font-semibold text-xs transition">
+                  ✨ ใช้สลิปจำลอง
+                </button>
+              </div>
+
+              <div id="slipDropZone"
+                class="relative rounded-2xl border-2 border-dashed border-purple-300 bg-purple-50/60 hover:bg-purple-50 transition p-5 text-center cursor-pointer"
+                onclick="document.getElementById('slipFileInput').click()">
+                <input id="slipFileInput" type="file" accept="image/png,image/jpeg,image/webp" class="hidden" onchange="handleSlipFile(event)" />
+
+                <div id="slipEmptyState" class="space-y-2">
+                  <div class="text-4xl">☁️</div>
+                  <p class="font-display font-bold text-sm sm:text-base text-[#31145E]">อัปโหลดสลิปการโอนเงิน</p>
+                  <p class="text-xs text-[#6E5596]">แตะเพื่อเลือกไฟล์ หรือลากไฟล์มาวางที่นี่ (JPG, PNG ไม่เกิน 10 MB)</p>
+                </div>
+
+                <div id="slipPreviewState" class="hidden space-y-3">
+                  <img id="slipPreviewImg" src="" alt="ตัวอย่างสลิป"
+                    class="max-h-48 mx-auto rounded-xl border-2 border-purple-200 shadow-sm object-contain bg-white" />
+                  <div class="flex items-center justify-center gap-2 flex-wrap">
+                    <span id="slipFileName" class="text-xs font-medium text-[#4F2199] bg-white px-3 py-1 rounded-full border border-purple-200">slip.png</span>
+                    <button type="button" onclick="event.stopPropagation(); clearSlip()"
+                      class="px-3 py-1 rounded-full bg-rose-100 hover:bg-rose-200 text-rose-700 text-xs font-display font-semibold transition">
+                      ลบสลิป
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit"
+              class="jelly-btn-mint w-full py-3.5 rounded-full font-display font-bold text-lg flex items-center justify-center gap-2">
+              <span>✅</span>
+              <span>ยืนยันการชำระเงิน (โหมด Demo)</span>
+            </button>
+          </form>
+        </section>
+
+        <!-- ------------------------------------------------------
+             PAGE 6: รายการสั่งซื้อล่าสุด / ติดตามออเดอร์ (RECENT ORDERS)
+             ------------------------------------------------------ -->
+        <section id="page-recent" class="hidden space-y-5">
+          <div class="flex items-center justify-between px-1">
+            <h2 class="font-display font-bold text-xl sm:text-2xl text-[#31145E] flex items-center gap-2">
+              <span>🧾</span>
+              <span>รายการสั่งซื้อล่าสุด</span>
+            </h2>
+            <button type="button" onclick="openInfoModal()"
+              class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-white/85 border border-purple-200 text-xs font-medium text-[#5A3B8C]">
+              <span class="w-4 h-4 rounded-full border border-[#5A3B8C] flex items-center justify-center text-[10px] font-bold">i</span>
+              ข้อมูลจำลอง
+            </button>
+          </div>
+
+          <!-- Search Order by ID -->
+          <div class="flex items-center gap-2">
+            <div class="flex-1 jelly-card rounded-full px-4 py-2 flex items-center gap-2">
+              <span class="text-[#7A5AA8]">🔍</span>
+              <input id="trackOrderInput" type="text" placeholder="กรอกเลขออเดอร์ เช่น #JA1032"
+                onkeydown="if(event.key==='Enter'){ event.preventDefault(); searchOrderFromInput(); }"
+                class="w-full bg-transparent text-sm sm:text-base font-display font-semibold text-[#31145E] placeholder:font-normal placeholder:text-[#967DBB] focus:outline-none" />
+              <button type="button" onclick="clearTrackInput()" class="text-purple-400 hover:text-purple-700 text-xs font-bold px-1" aria-label="ล้างช่องค้นหา">✕</button>
+            </div>
+            <button type="button" onclick="searchOrderFromInput()"
+              class="jelly-btn-mint px-5 py-3 rounded-full font-display font-bold text-sm sm:text-base shrink-0">
+              ค้นหา
+            </button>
+          </div>
+
+          <!-- Quick Select Order Chips -->
+          <div id="recentOrdersQuickList" class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
+            <!-- Rendered by JS -->
+          </div>
+
+          <!-- Selected Order Detail + Timeline Container -->
+          <div id="trackResultContainer" class="space-y-5">
+            <!-- Rendered by JS -->
+          </div>
+        </section>
+
+        <!-- ------------------------------------------------------
+             PAGE 7: ติดต่อ / กฎต่างๆ (CONTACT & RULES PAGE — จัดระเบียบสะอาดตา)
+             ------------------------------------------------------ -->
+        <section id="page-contact" class="hidden space-y-6">
+          <!-- Clean Contact Header Card -->
+          <div class="jelly-dark-card rounded-[2rem] p-5 sm:p-6 text-white flex items-center justify-between gap-4">
+            <div class="relative z-10 space-y-2">
+              <h2 class="font-display font-bold text-2xl sm:text-3xl leading-tight">ติดต่อร้าน & กฎกติกา</h2>
+              <p class="text-xs sm:text-sm text-purple-100">สอบถามการใช้งาน แจ้งเคลมแอป หรืออ่านเงื่อนไขก่อนสั่งซื้อ</p>
+              <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 border border-white/25 text-xs font-display text-[#C7FFF3]">
+                <span>🕒</span>
+                <span id="contactOpenHoursBadge">เวลาทำการ: ทุกวัน 09:00 - 23:30 น.</span>
+              </div>
+            </div>
+            <div class="relative z-10 text-4xl sm:text-5xl shrink-0 drop-shadow">💬</div>
+          </div>
+
+          <!-- Contact Channels (กดเข้าเชื่อมลิงก์โดยตรง ไม่มีปุ่มคัดลอก) -->
+          <div class="space-y-3">
+            <div class="flex items-center justify-between px-1">
+              <h3 class="font-display font-bold text-lg text-[#31145E]">ช่องทางการติดต่อ</h3>
+              <span class="text-xs text-[#6E5596]">แตะเพื่อเปิดลิงก์</span>
+            </div>
+            <div id="contactChannelsGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+              <!-- Rendered by JS -->
+            </div>
+          </div>
+
+          <!-- Store Rules Accordion -->
+          <div class="space-y-3">
+            <h3 class="font-display font-bold text-lg text-[#31145E] px-1">กฎกติกาและเงื่อนไขการรับประกัน</h3>
+            <div id="storeRulesAccordion" class="space-y-3">
+              <!-- Rendered by JS -->
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+
+    <!-- ==========================================================
+         ADMIN PANEL VIEW (DEMO BACKEND)
+         ========================================================== -->
+    <div id="adminView" class="hidden w-full flex-1 pb-16">
+      <div class="w-full max-w-5xl mx-auto px-4 sm:px-6 pt-5 space-y-6">
+
+        <!-- Admin Header -->
+        <div class="jelly-dark-card rounded-[2rem] p-5 sm:p-6 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-4 pr-14 sm:pr-16">
+          <div class="relative z-10 space-y-1">
+            <div class="inline-flex items-center gap-2 px-3 py-0.5 rounded-full bg-amber-300/20 border border-amber-200/40 text-amber-200 text-xs font-display font-semibold">
+              ⚠️ โหมด Demo (เก็บข้อมูลชั่วคราวในเบราว์เซอร์ ยังไม่เชื่อมฐานข้อมูลจริง)
+            </div>
+            <h1 class="font-display font-bold text-2xl sm:text-3xl">ระบบหลังบ้าน Jelly Arcade</h1>
+            <p class="text-xs sm:text-sm text-purple-100">จัดการออเดอร์ ตรวจสลิป อัปเดตสถานะ เพิ่ม/ลบแอป และตั้งค่าร้าน</p>
+          </div>
+          <div class="relative z-10 flex items-center gap-2">
+            <button type="button" onclick="toggleAppMode()"
+              class="jelly-btn-mint px-4 py-2 rounded-full font-display font-bold text-sm">
+              🛍️ กลับหน้าร้าน
+            </button>
+          </div>
+        </div>
+
+        <!-- Admin KPI Cards -->
+        <div id="adminStatsGrid" class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <!-- Rendered by JS -->
+        </div>
+
+        <!-- Admin Navigation Tabs -->
+        <div class="jelly-card p-1.5 rounded-full flex items-center gap-1.5">
+          <button id="adminTab-orders" type="button" onclick="setAdminTab('orders')"
+            class="flex-1 py-2.5 px-3 rounded-full font-display font-bold text-xs sm:text-sm transition">
+            🧾 จัดการออเดอร์
+          </button>
+          <button id="adminTab-apps" type="button" onclick="setAdminTab('apps')"
+            class="flex-1 py-2.5 px-3 rounded-full font-display font-bold text-xs sm:text-sm transition">
+            📱 จัดการแอป
+          </button>
+          <button id="adminTab-settings" type="button" onclick="setAdminTab('settings')"
+            class="flex-1 py-2.5 px-3 rounded-full font-display font-bold text-xs sm:text-sm transition">
+            ⚙️ ตั้งค่าร้าน
+          </button>
+        </div>
+
+        <!-- Admin Tab 1: Orders -->
+        <div id="adminSection-orders" class="space-y-4">
+          <div id="adminOrderFilterBar" class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
+            <!-- Rendered by JS -->
+          </div>
+          <div id="adminOrdersList" class="space-y-3">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+
+        <!-- Admin Tab 2: Apps -->
+        <div id="adminSection-apps" class="hidden space-y-5">
+          <!-- Add / Edit App Form (รองรับหลายแพ็กเกจ + โหมดแก้ไขแอปเดิม) -->
+          <form id="adminAppForm" onsubmit="submitNewApp(event)" class="jelly-card p-5 space-y-4">
+            <div class="flex items-center justify-between gap-2 flex-wrap">
+              <h3 id="adminAppFormTitle" class="font-display font-bold text-lg text-[#31145E]">➕ เพิ่มแอปใหม่ (Demo)</h3>
+              <button id="cancelEditAppBtn" type="button" onclick="cancelEditApp()"
+                class="hidden px-3.5 py-1.5 rounded-full bg-purple-100 hover:bg-purple-200 text-[#4F2199] font-display font-bold text-xs transition">
+                ✕ ยกเลิกการแก้ไข
+              </button>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+              <div>
+                <label class="block text-xs font-display font-semibold text-[#5A3B8C] mb-1">ชื่อแอป</label>
+                <input id="newAppName" type="text" required placeholder="เช่น Viu Premium"
+                  class="w-full px-3.5 py-2.5 rounded-xl bg-purple-50 border border-purple-200 text-sm focus:outline-none focus:border-[#7C3AED]" />
+              </div>
+              <div>
+                <label class="block text-xs font-display font-semibold text-[#5A3B8C] mb-1">หมวดหมู่</label>
+                <select id="newAppCategory"
+                  class="w-full px-3.5 py-2.5 rounded-xl bg-purple-50 border border-purple-200 text-sm focus:outline-none focus:border-[#7C3AED]">
+                  <option value="ดูหนัง">ดูหนัง</option>
+                  <option value="ฟังเพลง">ฟังเพลง</option>
+                  <option value="แต่งรูป">แต่งรูป</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-display font-semibold text-[#5A3B8C] mb-1">ธีมไอคอน</label>
+                <select id="newAppTheme"
+                  class="w-full px-3.5 py-2.5 rounded-xl bg-purple-50 border border-purple-200 text-sm focus:outline-none focus:border-[#7C3AED]">
+                  <option value="stream">Stream (ม่วง-ชมพู)</option>
+                  <option value="music">Music (ชมพู-หูฟัง)</option>
+                  <option value="design">Design (ฟ้า-พู่กัน)</option>
+                  <option value="cinebox">CineBox (มิ้นต์-ทีวี)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Dynamic Multi-Package Pricing Editor -->
+            <div class="space-y-2.5 pt-1">
+              <div class="flex items-center justify-between gap-2 flex-wrap">
+                <label class="block text-xs sm:text-sm font-display font-bold text-[#31145E]">📦 แพ็กเกจและราคา (เพิ่มได้หลายแพ็กเกจ)</label>
+                <button type="button" onclick="addAdminPackageRow()"
+                  class="px-3.5 py-1.5 rounded-full bg-purple-100 hover:bg-purple-200 text-[#4F2199] font-display font-bold text-xs transition">
+                  ➕ เพิ่มแพ็กเกจ
+                </button>
+              </div>
+              <div id="adminPackagesEditor" class="space-y-2.5">
+                <!-- Rendered by JS -->
+              </div>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-between gap-3 pt-1">
+              <label class="flex items-center gap-2 text-sm text-[#31145E] cursor-pointer">
+                <input id="newAppFeatured" type="checkbox" checked class="w-4 h-4 accent-[#6227B8] rounded" />
+                <span class="font-display font-medium">แสดงในรายการโปรโมชั่น</span>
+              </label>
+
+              <button id="adminAppSubmitBtn" type="submit" class="jelly-btn-mint px-6 py-2.5 rounded-full font-display font-bold text-sm">
+                ➕ บันทึกแอปใหม่ลงหน้าร้าน (Demo)
+              </button>
+            </div>
+          </form>
+
+          <!-- Apps List -->
+          <div id="adminAppsList" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+
+        <!-- Admin Tab 3: Settings -->
+        <div id="adminSection-settings" class="hidden space-y-5">
+          <form onsubmit="saveStoreSettings(event)" class="jelly-card p-5 space-y-4">
+            <h3 class="font-display font-bold text-lg text-[#31145E]">⚙️ ตั้งค่าบัญชีรับโอนและช่องทางติดต่อ (Demo)</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs font-display font-semibold text-[#5A3B8C] mb-1">ชื่อธนาคาร</label>
+                <input id="settingBankName" type="text" required
+                  class="w-full px-3.5 py-2.5 rounded-xl bg-purple-50 border border-purple-200 text-sm focus:outline-none focus:border-[#7C3AED]" />
+              </div>
+              <div>
+                <label class="block text-xs font-display font-semibold text-[#5A3B8C] mb-1">เลขที่บัญชี (จำลอง)</label>
+                <input id="settingAccountNumber" type="text" required
+                  class="w-full px-3.5 py-2.5 rounded-xl bg-purple-50 border border-purple-200 text-sm focus:outline-none focus:border-[#7C3AED]" />
+              </div>
+              <div>
+                <label class="block text-xs font-display font-semibold text-[#5A3B8C] mb-1">ชื่อบัญชี</label>
+                <input id="settingAccountName" type="text" required
+                  class="w-full px-3.5 py-2.5 rounded-xl bg-purple-50 border border-purple-200 text-sm focus:outline-none focus:border-[#7C3AED]" />
+              </div>
+              <div>
+                <label class="block text-xs font-display font-semibold text-[#5A3B8C] mb-1">LINE Official ของร้าน</label>
+                <input id="settingLineOfficial" type="text" required
+                  class="w-full px-3.5 py-2.5 rounded-xl bg-purple-50 border border-purple-200 text-sm focus:outline-none focus:border-[#7C3AED]" />
+              </div>
+              <div>
+                <label class="block text-xs font-display font-semibold text-[#5A3B8C] mb-1">ลิงก์ติดต่อ LINE (URL)</label>
+                <input id="settingLineUrl" type="url" required placeholder="https://line.me/ti/p/..."
+                  class="w-full px-3.5 py-2.5 rounded-xl bg-purple-50 border border-purple-200 text-sm focus:outline-none focus:border-[#7C3AED]" />
+              </div>
+              <div>
+                <label class="block text-xs font-display font-semibold text-[#5A3B8C] mb-1">ลิงก์เพจ / ช่องทางสำรอง (URL)</label>
+                <input id="settingSocialUrl" type="url" required placeholder="https://instagram.com/..."
+                  class="w-full px-3.5 py-2.5 rounded-xl bg-purple-50 border border-purple-200 text-sm focus:outline-none focus:border-[#7C3AED]" />
+              </div>
+            </div>
+            <div class="flex flex-wrap items-center gap-3 pt-1">
+              <button type="submit" class="jelly-btn-mint px-6 py-2.5 rounded-full font-display font-bold text-sm">
+                💾 บันทึกการตั้งค่า (Demo)
+              </button>
+              <button type="button" onclick="openResetConfirmModal()"
+                class="px-5 py-2.5 rounded-full bg-rose-100 hover:bg-rose-200 text-rose-700 font-display font-bold text-sm transition">
+                🔄 รีเซ็ตข้อมูลจำลองทั้งหมด
+              </button>
+            </div>
+          </form>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ============================================================
+       FLOATING BOTTOM NAVIGATION BAR (หน้าหลัก / ตะกร้า / ติดต่อ/กฎต่างๆ)
+       ============================================================ -->
+  <nav id="bottomNav" class="fixed bottom-3 inset-x-0 z-40 px-3 sm:px-4 pointer-events-none">
+    <div class="jelly-dock max-w-lg mx-auto rounded-full p-2 flex items-center justify-between gap-2 pointer-events-auto">
+      <!-- Home -->
+      <button type="button" onclick="navigateTo('home')" id="nav-home"
+        class="nav-pill-active flex-1 py-2.5 px-3 rounded-full font-display font-semibold text-xs sm:text-sm flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 transition">
+        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2.3" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 10.5L12 3l9 7.5V20a1 1 0 01-1 1h-5.5v-6.5h-5V21H4a1 1 0 01-1-1v-9.5z"/>
+        </svg>
+        <span class="whitespace-nowrap">หน้าหลัก</span>
+      </button>
+
+      <!-- Cart -->
+      <button type="button" onclick="navigateTo('cart')" id="nav-cart"
+        class="flex-1 py-2.5 px-3 rounded-full text-white font-display font-semibold text-xs sm:text-sm flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 transition relative">
+        <span class="relative inline-flex mr-0.5">
+          <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2.3" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+          </svg>
+          <span id="navCartBadge" class="hidden absolute -top-2 -right-2.5 min-w-[18px] h-[18px] px-1 rounded-full bg-rose-500 text-white text-[10px] font-bold flex items-center justify-center shadow">0</span>
+        </span>
+        <span class="whitespace-nowrap">ตะกร้า</span>
+      </button>
+
+      <!-- Contact & Rules -->
+      <button type="button" onclick="navigateTo('contact')" id="nav-contact"
+        class="flex-1 py-2.5 px-3 rounded-full text-white font-display font-semibold text-xs sm:text-sm flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 transition">
+        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+        </svg>
+        <span class="whitespace-nowrap">ติดต่อ/กฎต่างๆ</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ============================================================
+       WELCOME POPUP MODAL (ป๊อปอัพต้อนรับแบบมีรูปภาพ)
+       ============================================================ -->
+  <div id="welcomeModal" class="hidden fixed inset-0 z-[60] bg-[#1E0B3B]/65 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="jelly-card w-full max-w-md overflow-hidden animate-pop relative">
+      <button type="button" onclick="closeWelcomeModal()" aria-label="ปิดป๊อปอัพต้อนรับ"
+        class="absolute top-3 right-3 z-20 w-8 h-8 rounded-full bg-black/45 hover:bg-black/65 text-white flex items-center justify-center text-sm font-bold transition">
+        ✕
+      </button>
+
+      <!-- Welcome Banner Image -->
+      <div class="relative bg-[#4A1994]">
+        <img src="https://i.postimg.cc/jSXRfvS8/180CDEB6-A8FC-4E80-8A04-235956C65240.png"
+          alt="ยินดีต้อนรับสู่ Jelly Arcade"
+          onerror="this.onerror=null; this.src='https://placehold.co/800x400/5F24B8/FFFFFF?text=Welcome+to+Jelly+Arcade';"
+          class="w-full h-44 sm:h-48 object-cover block" />
+        <div class="absolute bottom-2.5 left-3 px-3 py-1 rounded-full bg-[#2E115A]/85 text-[#C7FFF3] font-display font-semibold text-xs border border-white/25">
+          ✨ ยินดีต้อนรับสู่ Jelly Arcade
+        </div>
+      </div>
+
+      <div class="p-5 space-y-4 text-center">
+        <div class="space-y-1">
+          <h3 class="font-display font-bold text-xl text-[#31145E]">ร้านแอปพรีเมียมราคาสุดคุ้ม!</h3>
+          <p class="text-xs sm:text-sm text-[#6E5596]">
+            เลือกดูหมวดหมู่แอปที่ชอบ กดเลือกแพ็กเกจ 30/90 วัน และแจ้งไอดีไลน์เพื่อรับสินค้าได้เลยค่ะ (เวอร์ชันทดลองใช้งาน Demo)
+          </p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2.5">
+          <button type="button" onclick="closeWelcomeModal()"
+            class="jelly-btn-mint py-2.5 px-4 rounded-full font-display font-bold text-sm">
+            🛍️ เข้าสู่หน้าร้าน
+          </button>
+          <button type="button" onclick="closeWelcomeModal(); navigateTo('contact')"
+            class="py-2.5 px-4 rounded-full bg-purple-100 hover:bg-purple-200 text-[#4F2199] font-display font-bold text-sm transition">
+            📜 อ่านกฎร้าน
+          </button>
+        </div>
+
+        <label class="inline-flex items-center gap-2 text-xs text-[#6E5596] cursor-pointer pt-1">
+          <input id="hideWelcomeTodayCheckbox" type="checkbox" class="w-4 h-4 accent-[#6227B8] rounded" />
+          <span>ไม่ต้องแสดงป๊อปอัพนี้อีกในวันนี้</span>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       DEMO INFO MODAL (แจ้งสถานะข้อมูลจำลอง)
+       ============================================================ -->
+  <div id="infoModal" class="hidden fixed inset-0 z-[60] bg-[#1E0B3B]/60 backdrop-blur-sm flex items-center justify-center p-4"
+    onclick="if(event.target===this) closeInfoModal()">
+    <div class="jelly-card w-full max-w-md p-6 space-y-4 animate-pop">
+      <div class="flex items-center justify-between">
+        <h3 class="font-display font-bold text-lg text-[#31145E] flex items-center gap-2">
+          <span>ℹ️</span>
+          <span>สถานะข้อมูลจำลอง (Demo)</span>
+        </h3>
+        <button type="button" onclick="closeInfoModal()" class="w-8 h-8 rounded-full bg-purple-100 text-[#4F2199] font-bold">✕</button>
+      </div>
+
+      <div class="space-y-2.5 text-xs sm:text-sm text-[#5A3B8C] leading-relaxed">
+        <p>• เว็บไซต์นี้ทำงานในโหมด <strong>Frontend Demo</strong> ยังไม่ได้เชื่อมต่อฐานข้อมูลจริง ระบบตรวจสลิปอัตโนมัติ หรือส่งข้อความ LINE จริง</p>
+        <p>• ระบบแยก <strong>ข้อมูลตัวอย่างเริ่มต้น</strong> (เช่น ออเดอร์ <code>#JA1032</code> และบัญชี <code>xxx-x-1234-x</code>) ออกจาก <strong>ข้อมูลทดสอบที่คุณสร้างใหม่</strong> ในเบราว์เซอร์ (<code>localStorage</code>) อย่างชัดเจน</p>
+        <p>• คุณสามารถกดปุ่มไอคอน <strong>⚙️ ฟันเฟืองมุมขวาบน</strong> เพื่อทดลองเข้าหน้าหลังบ้าน (Admin) อัปเดตสถานะออเดอร์หรือเพิ่มแอปใหม่ได้ทันที</p>
+      </div>
+
+      <div class="flex items-center justify-end gap-2 pt-2">
+        <button type="button" onclick="closeInfoModal()" class="jelly-btn-mint px-5 py-2 rounded-full font-display font-bold text-sm">
+          เข้าใจแล้ว
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       SLIP PREVIEW MODAL (ADMIN)
+       ============================================================ -->
+  <div id="slipModal" class="hidden fixed inset-0 z-[60] bg-[#1E0B3B]/70 backdrop-blur-sm flex items-center justify-center p-4"
+    onclick="if(event.target===this) closeSlipPreviewModal()">
+    <div class="jelly-card w-full max-w-sm p-5 space-y-4 animate-pop text-center">
+      <div class="flex items-center justify-between">
+        <h3 id="slipModalTitle" class="font-display font-bold text-base text-[#31145E]">หลักฐานสลิปการโอน</h3>
+        <button type="button" onclick="closeSlipPreviewModal()" class="w-8 h-8 rounded-full bg-purple-100 text-[#4F2199] font-bold">✕</button>
+      </div>
+      <img id="slipModalImage" src="" alt="สลิปโอนเงิน"
+        onerror="this.onerror=null; this.src='https://placehold.co/420x520/F3EAFF/4F2199?text=Demo+Slip+Image';"
+        class="w-full max-h-80 object-contain rounded-2xl border-2 border-purple-200 bg-purple-50" />
+      <p id="slipModalCaption" class="text-xs text-[#6E5596]"></p>
+      <button type="button" onclick="closeSlipPreviewModal()" class="jelly-btn-mint w-full py-2.5 rounded-full font-display font-bold text-sm">
+        ปิดหน้าต่าง
+      </button>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       RESET CONFIRM MODAL (แทน confirm() ของเบราว์เซอร์)
+       ============================================================ -->
+  <div id="resetConfirmModal" class="hidden fixed inset-0 z-[65] bg-[#1E0B3B]/65 backdrop-blur-sm flex items-center justify-center p-4"
+    onclick="if(event.target===this) closeResetConfirmModal()">
+    <div class="jelly-card w-full max-w-sm p-6 space-y-4 animate-pop text-center">
+      <div class="text-4xl">🔄</div>
+      <h3 class="font-display font-bold text-lg text-[#31145E]">ยืนยันการรีเซ็ตข้อมูลจำลอง?</h3>
+      <p class="text-xs sm:text-sm text-[#6E5596]">ออเดอร์และแอปที่คุณสร้างทดสอบไว้ในเบราว์เซอร์จะถูกล้างกลับเป็นค่าตัวอย่างเริ่มต้นทั้งหมด</p>
+      <div class="grid grid-cols-2 gap-2.5 pt-1">
+        <button type="button" onclick="closeResetConfirmModal()"
+          class="py-2.5 rounded-full bg-purple-100 hover:bg-purple-200 text-[#4F2199] font-display font-bold text-sm transition">
+          ยกเลิก
+        </button>
+        <button type="button" onclick="confirmResetDemoData()"
+          class="py-2.5 rounded-full bg-rose-500 hover:bg-rose-600 text-white font-display font-bold text-sm shadow transition">
+          รีเซ็ตเลย
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       DELETE ORDER CONFIRM MODAL (ยืนยันการลบออเดอร์แทน confirm())
+       ============================================================ -->
+  <div id="deleteOrderConfirmModal" class="hidden fixed inset-0 z-[65] bg-[#1E0B3B]/65 backdrop-blur-sm flex items-center justify-center p-4"
+    onclick="if(event.target===this) closeDeleteOrderModal()">
+    <div class="jelly-card w-full max-w-sm p-6 space-y-4 animate-pop text-center">
+      <div class="text-4xl">🗑️</div>
+      <h3 class="font-display font-bold text-lg text-[#31145E]">ยืนยันการลบออเดอร์?</h3>
+      <p id="deleteOrderConfirmText" class="text-xs sm:text-sm text-[#6E5596]">ต้องการลบออเดอร์นี้ออกจากระบบ Demo ใช่หรือไม่</p>
+      <div class="grid grid-cols-2 gap-2.5 pt-1">
+        <button type="button" onclick="closeDeleteOrderModal()"
+          class="py-2.5 rounded-full bg-purple-100 hover:bg-purple-200 text-[#4F2199] font-display font-bold text-sm transition">
+          ยกเลิก
+        </button>
+        <button type="button" onclick="confirmDeleteOrder()"
+          class="py-2.5 rounded-full bg-rose-500 hover:bg-rose-600 text-white font-display font-bold text-sm shadow transition">
+          ลบออเดอร์
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       TOAST NOTIFICATION (แทน alert())
+       ============================================================ -->
+  <div id="toastContainer" class="fixed top-4 left-1/2 -translate-x-1/2 z-[80] w-[92%] max-w-sm space-y-2 pointer-events-none"></div>
+
+  <!-- ============================================================
+       MAIN APPLICATION SCRIPT
+       ============================================================ -->
+  <script>
+    /* ------------------------------------------------------------
+       1. SEED DATA (ข้อมูลตัวอย่างเริ่มต้น - แยกจากข้อมูลทดสอบใน localStorage)
+       ------------------------------------------------------------ */
+    const STORAGE_KEY = 'jelly_arcade_demo_state_v3';
+    const WELCOME_HIDE_KEY = 'jelly_arcade_welcome_hide_date';
+    const DEMO_SLIP_PLACEHOLDER = 'https://placehold.co/440x560/F3EAFF/4F2199?text=Jelly+Arcade%0ADemo+Transfer+Slip';
+
+    const SEED_SETTINGS = {
+      bankName: 'ธนาคารจำลอง (Demo Bank)',
+      accountNumber: 'xxx-x-1234-x',
+      accountName: 'บจก. เจลลี่ อาร์เคด (ข้อมูลจำลอง)',
+      lineOfficial: '@jelly.arcade.demo',
+      lineUrl: 'https://line.me/R/ti/p/@jelly.arcade.demo',
+      socialName: 'Instagram ร้าน',
+      socialHandle: '@jelly.arcade.shop',
+      socialUrl: 'https://instagram.com',
+      openHours: 'ทุกวัน 09:00 - 23:30 น.',
+    };
+
+    const SEED_APPS = [
+      {
+        id: 'stream-plus',
+        name: 'Stream Plus',
+        category: 'ดูหนัง',
+        badge: 'พรีเมียม',
+        theme: 'stream',
+        featured: true,
+        isSample: true,
+        packages: [
+          { days: 30, price: 99, label: '30 วัน' },
+          { days: 90, price: 249, label: '90 วัน' },
+        ],
+        features: [
+          { icon: '🎬', title: 'ดูหนังและซีรีส์ได้ไม่จำกัด', desc: 'รวมคอนเทนต์ยอดนิยม ภาพคมชัดระดับ HD / 4K' },
+          { icon: '📱', title: 'ใช้งานได้หลายอุปกรณ์', desc: 'ดูได้ทั้งมือถือ แท็บเล็ต iPad และสมาร์ททีวี' },
+        ],
+      },
+      {
+        id: 'cinebox-hd',
+        name: 'CineBox HD',
+        category: 'ดูหนัง',
+        badge: 'พรีเมียม',
+        theme: 'cinebox',
+        featured: false,
+        isSample: true,
+        packages: [
+          { days: 30, price: 89, label: '30 วัน' },
+          { days: 90, price: 229, label: '90 วัน' },
+        ],
+        features: [
+          { icon: '🍿', title: 'ซับไทย พากย์ไทย ครบทุกเรื่อง', desc: 'อัปเดตซีรีส์และอนิเมะใหม่ทุกสัปดาห์' },
+          { icon: '⚡', title: 'ดาวน์โหลดเก็บไว้ดูออฟไลน์ได้', desc: 'รองรับการดูแบบไม่มีโฆษณาคั่น' },
+        ],
+      },
+      {
+        id: 'music-plus',
+        name: 'Music Plus',
+        category: 'ฟังเพลง',
+        badge: 'พรีเมียม',
+        theme: 'music',
+        featured: true,
+        isSample: true,
+        packages: [
+          { days: 30, price: 59, label: '30 วัน' },
+          { days: 90, price: 159, label: '90 วัน' },
+        ],
+        features: [
+          { icon: '🎧', title: 'ฟังเพลงไม่มีโฆษณาคั่น', desc: 'คุณภาพเสียงคมชัดระดับ Lossless พร้อมเนื้อเพลง' },
+          { icon: '📥', title: 'ฟังออฟไลน์และปิดหน้าจอได้', desc: 'สร้างเพลย์ลิสต์ส่วนตัวได้ไม่จำกัด' },
+        ],
+      },
+      {
+        id: 'beat-wave',
+        name: 'Beat Wave',
+        category: 'ฟังเพลง',
+        badge: 'พรีเมียม',
+        theme: 'music',
+        featured: false,
+        isSample: true,
+        packages: [
+          { days: 30, price: 49, label: '30 วัน' },
+          { days: 90, price: 129, label: '90 วัน' },
+        ],
+        features: [
+          { icon: '🎵', title: 'รวมเพลงฮิตและพอดแคสต์ดัง', desc: 'ข้ามเพลงได้ไม่จำกัด พร้อมโหมดเสียงรอบทิศทาง' },
+          { icon: '📲', title: 'ซิงค์เพลย์ลิสต์ทุกอุปกรณ์', desc: 'ใช้งานได้ทั้ง iOS, Android และคอมพิวเตอร์' },
+        ],
+      },
+      {
+        id: 'design-pro',
+        name: 'Design Pro',
+        category: 'แต่งรูป',
+        badge: 'พรีเมียม',
+        theme: 'design',
+        featured: true,
+        isSample: true,
+        packages: [
+          { days: 30, price: 129, label: '30 วัน' },
+          { days: 90, price: 329, label: '90 วัน' },
+        ],
+        features: [
+          { icon: '✨', title: 'ปลดล็อกฟอนต์และเทมเพลตโปรทั้งหมด', desc: 'ลบพื้นหลังอัตโนมัติด้วย AI ในคลิกเดียว' },
+          { icon: '🎨', title: 'ส่งออกไฟล์ความละเอียดสูง', desc: 'ไม่ติดลายน้ำ ใช้งานเชิงพาณิชย์ได้สะดวก' },
+        ],
+      },
+      {
+        id: 'pixel-glow',
+        name: 'Pixel Glow',
+        category: 'แต่งรูป',
+        badge: 'พรีเมียม',
+        theme: 'design',
+        featured: false,
+        isSample: true,
+        packages: [
+          { days: 30, price: 79, label: '30 วัน' },
+          { days: 90, price: 199, label: '90 วัน' },
+        ],
+        features: [
+          { icon: '🌈', title: 'ฟิลเตอร์โทนเกาหลีและพรีเซ็ตกว่า 500 แบบ', desc: 'ปรับแต่งสีผิวและแสงเงาแบบมืออาชีพ' },
+          { icon: '🖼️', title: 'แต่งภาพและวิดีโอสั้นได้ในแอปเดียว', desc: 'เหมาะสำหรับครีเอเตอร์และร้านค้าออนไลน์' },
+        ],
+      },
+    ];
+
+    const SEED_CART = [
+      { appId: 'stream-plus', days: 30, qty: 1 },
+      { appId: 'music-plus', days: 30, qty: 1 },
+    ];
+
+    const SEED_ORDERS = [
+      {
+        id: '#JA1032',
+        customerName: 'คุณมิ้นท์',
+        items: [
+          { appId: 'stream-plus', name: 'Stream Plus', theme: 'stream', days: 30, price: 99, qty: 1 },
+          { appId: 'music-plus', name: 'Music Plus', theme: 'music', days: 30, price: 59, qty: 1 },
+        ],
+        total: 158,
+        customerLineId: '@jelly.demo01',
+        status: 'pending_verify', // 'ordered' | 'slip_attached' | 'pending_verify' | 'delivered'
+        slipName: 'demo-slip-JA1032.png',
+        slipDataUrl: DEMO_SLIP_PLACEHOLDER,
+        isSample: true,
+        timestamps: {
+          ordered: 'วันนี้ 14:20 น.',
+          slip_attached: 'วันนี้ 14:23 น.',
+          pending_verify: 'กำลังตรวจสอบการชำระเงิน',
+          delivered: 'รอการส่งมอบบริการ',
+        },
+      },
+      {
+        id: '#JA1031',
+        customerName: 'คุณบีม',
+        items: [
+          { appId: 'design-pro', name: 'Design Pro', theme: 'design', days: 30, price: 129, qty: 1 },
+        ],
+        total: 129,
+        customerLineId: '@mint.design',
+        status: 'delivered',
+        slipName: 'demo-slip-JA1031.png',
+        slipDataUrl: DEMO_SLIP_PLACEHOLDER,
+        isSample: true,
+        timestamps: {
+          ordered: 'เมื่อวาน 19:05 น.',
+          slip_attached: 'เมื่อวาน 19:07 น.',
+          pending_verify: 'เมื่อวาน 19:10 น.',
+          delivered: 'ส่งมอบผ่าน LINE แล้ว',
+        },
+      },
+    ];
+
+    /* ------------------------------------------------------------
+       2. GLOBAL APPLICATION STATE
+       ------------------------------------------------------------ */
+    let state = {
+      mode: 'customer', // 'customer' | 'admin'
+      currentPage: 'home', // 'home' | 'category' | 'detail' | 'cart' | 'checkout' | 'recent' | 'contact'
+      previousPage: 'home',
+      adminTab: 'orders', // 'orders' | 'apps' | 'settings'
+      adminOrderFilter: 'all',
+
+      searchQuery: '',
+      selectedCategory: 'ดูหนัง',
+      bannerIndex: 0,
+
+      selectedAppId: 'stream-plus',
+      selectedPackageDays: 30,
+      selectedPackageIndex: 0,
+
+      trackedOrderId: '#JA1032',
+      openRuleIndex: 0,
+      uploadedSlip: null, // { name, previewUrl, isDemoGenerated }
+
+      editingAppId: null,
+      adminFormPackages: [
+        { label: '30 วัน', price: 79 },
+        { label: '90 วัน', price: 199 },
+      ],
+      pendingDeleteOrderId: null,
+
+      settings: deepClone(SEED_SETTINGS),
+      apps: deepClone(SEED_APPS),
+      cart: deepClone(SEED_CART),
+      orders: deepClone(SEED_ORDERS),
+    };
+
+    function deepClone(obj) {
+      return JSON.parse(JSON.stringify(obj));
+    }
+
+    function escapeHTML(str) {
+      return String(str ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function formatNowTime() {
+      const now = new Date();
+      const hh = String(now.getHours()).padStart(2, '0');
+      const mm = String(now.getMinutes()).padStart(2, '0');
+      return `วันนี้ ${hh}:${mm} น.`;
+    }
+
+    /* ------------------------------------------------------------
+       3. LOCAL STORAGE PERSISTENCE (DEMO ONLY)
+       ------------------------------------------------------------ */
+    function loadStateFromStorage() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return;
+        const parsed = JSON.parse(raw);
+        if (parsed.settings) state.settings = { ...deepClone(SEED_SETTINGS), ...parsed.settings };
+        if (Array.isArray(parsed.apps) && parsed.apps.length) state.apps = parsed.apps;
+        if (Array.isArray(parsed.cart)) state.cart = parsed.cart;
+        if (Array.isArray(parsed.orders) && parsed.orders.length) state.orders = parsed.orders;
+      } catch (err) {
+        console.warn('Could not load demo state from localStorage:', err);
+      }
+    }
+
+    function saveStateToStorage() {
+      try {
+        const payload = {
+          settings: state.settings,
+          apps: state.apps,
+          cart: state.cart,
+          orders: state.orders.map(o => ({
+            ...o,
+            // Avoid saving volatile blob URLs in localStorage
+            slipDataUrl: o.slipDataUrl && o.slipDataUrl.startsWith('blob:') ? DEMO_SLIP_PLACEHOLDER : o.slipDataUrl,
+          })),
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+      } catch (err) {
+        console.warn('Could not save demo state to localStorage:', err);
+      }
+    }
+
+    /* ------------------------------------------------------------
+       4. SVG ARTWORK HELPERS (MASCOT, APP ICONS, BANNER SCENES)
+       ------------------------------------------------------------ */
+    function getMascotSVG(propType = 'tablet') {
+      const propSVG = propType === 'parcel'
+        ? `
+          <rect x="64" y="88" width="52" height="36" rx="8" fill="#FCD34D" stroke="#F59E0B" stroke-width="2.5"/>
+          <rect x="85" y="88" width="10" height="36" fill="#A855F7"/>
+          <path d="M80 112l4-8 6 5 6-5 4 8H80z" fill="#FFFFFF"/>
+        `
+        : `
+          <rect x="60" y="86" width="60" height="38" rx="10" fill="url(#tabGrad)" stroke="#E9D5FF" stroke-width="2.5"/>
+          <path d="M80 112l4-10 6 6 6-6 4 10H80z" fill="#FFFFFF"/>
+        `;
+
+      return `
+        <svg viewBox="0 0 180 140" class="w-full h-full drop-shadow-lg" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="cloudBody" x1="30" y1="20" x2="150" y2="125" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#FFFFFF"/>
+              <stop offset="0.6" stop-color="#F1D9FF"/>
+              <stop offset="1" stop-color="#D7B4FF"/>
+            </linearGradient>
+            <linearGradient id="hpGrad" x1="40" y1="10" x2="140" y2="85" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#C084FC"/>
+              <stop offset="1" stop-color="#7E22CE"/>
+            </linearGradient>
+            <linearGradient id="tabGrad" x1="60" y1="86" x2="120" y2="124" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#A855F7"/>
+              <stop offset="1" stop-color="#6D28D9"/>
+            </linearGradient>
+          </defs>
+          <!-- Headphones Band -->
+          <path d="M46 66C46 34 66 16 90 16C114 16 134 34 134 66" stroke="url(#hpGrad)" stroke-width="11" stroke-linecap="round"/>
+          <!-- Cloud Body -->
+          <path d="M52 114C34 114 22 102 22 87C22 74 31 64 43 61C47 41 66 28 89 28C113 28 132 42 136 62C149 64 158 75 158 88C158 103 145 114 128 114H52Z" fill="url(#cloudBody)" stroke="#FFFFFF" stroke-width="3"/>
+          <!-- Headphones Earcups -->
+          <rect x="26" y="54" width="22" height="32" rx="11" fill="url(#hpGrad)" stroke="#F3E8FF" stroke-width="2"/>
+          <rect x="132" y="54" width="22" height="32" rx="11" fill="url(#hpGrad)" stroke="#F3E8FF" stroke-width="2"/>
+          <path d="M138 74l2-6 3 4 3-4 2 6h-10z" fill="#FDE047"/>
+          <!-- Cute Winking Face -->
+          <circle cx="74" cy="68" r="5" fill="#3B1572"/>
+          <circle cx="72.5" cy="66.5" r="1.7" fill="#FFFFFF"/>
+          <path d="M100 66L108 69L100 72" stroke="#3B1572" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+          <ellipse cx="62" cy="76" rx="6" ry="3.5" fill="#F472B6" fill-opacity="0.45"/>
+          <ellipse cx="118" cy="76" rx="6" ry="3.5" fill="#F472B6" fill-opacity="0.45"/>
+          <path d="M84 74C84 80 96 80 96 74H84Z" fill="#FB7185"/>
+          <!-- Sparkles -->
+          <path d="M24 38l3 7 7 3-7 3-3 7-3-7-7-3 7-3 3-7z" fill="#FDE047"/>
+          <circle cx="158" cy="36" r="4" fill="#A5F3FC"/>
+          <!-- Prop -->
+          ${propSVG}
+        </svg>
+      `;
+    }
+
+    function getAppIconSVG(theme = 'stream', sizeClass = 'w-14 h-14') {
+      const icons = {
+        stream: `
+          <svg viewBox="0 0 64 64" class="${sizeClass} shrink-0 drop-shadow" fill="none">
+            <defs>
+              <linearGradient id="icStream" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#3B1572"/>
+                <stop offset="1" stop-color="#7E22CE"/>
+              </linearGradient>
+            </defs>
+            <rect width="64" height="64" rx="18" fill="url(#icStream)" stroke="#E9D5FF" stroke-width="2"/>
+            <path d="M24 22L46 33L24 44V22Z" fill="#F9A8D4" stroke="#FFFFFF" stroke-width="2" stroke-linejoin="round"/>
+            <path d="M36 16l3-6 4 4 4-4 3 6H36z" fill="#FDE047"/>
+          </svg>
+        `,
+        music: `
+          <svg viewBox="0 0 64 64" class="${sizeClass} shrink-0 drop-shadow" fill="none">
+            <defs>
+              <linearGradient id="icMusic" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#A855F7"/>
+                <stop offset="1" stop-color="#EC4899"/>
+              </linearGradient>
+            </defs>
+            <rect width="64" height="64" rx="18" fill="url(#icMusic)" stroke="#FCE7F3" stroke-width="2"/>
+            <path d="M18 35C18 25 24 18 32 18C40 18 46 25 46 35" stroke="#FFFFFF" stroke-width="4.5" stroke-linecap="round"/>
+            <rect x="14" y="33" width="9" height="14" rx="4.5" fill="#FFFFFF"/>
+            <rect x="41" y="33" width="9" height="14" rx="4.5" fill="#FFFFFF"/>
+            <path d="M29 44V31l9-2v11" stroke="#FDE047" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="27" cy="44" r="3" fill="#FDE047"/>
+            <circle cx="36" cy="41" r="3" fill="#FDE047"/>
+          </svg>
+        `,
+        design: `
+          <svg viewBox="0 0 64 64" class="${sizeClass} shrink-0 drop-shadow" fill="none">
+            <defs>
+              <linearGradient id="icDesign" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#38BDF8"/>
+                <stop offset="1" stop-color="#6366F1"/>
+              </linearGradient>
+            </defs>
+            <rect width="64" height="64" rx="18" fill="url(#icDesign)" stroke="#E0F2FE" stroke-width="2"/>
+            <path d="M44 17L48 21L29 40L24 36L44 17Z" fill="#FFFFFF"/>
+            <path d="M24 36C19 37 17 42 16 46C21 47 26 45 29 40L24 36Z" fill="#FDE047"/>
+            <path d="M20 18l2 4 4 2-4 2-2 4-2-4-4-2 4-2 2-4z" fill="#A5F3FC"/>
+          </svg>
+        `,
+        cinebox: `
+          <svg viewBox="0 0 64 64" class="${sizeClass} shrink-0 drop-shadow" fill="none">
+            <defs>
+              <linearGradient id="icCine" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#2DD4BF"/>
+                <stop offset="1" stop-color="#4F46E5"/>
+              </linearGradient>
+            </defs>
+            <rect width="64" height="64" rx="18" fill="url(#icCine)" stroke="#CCFBF1" stroke-width="2"/>
+            <rect x="14" y="20" width="36" height="24" rx="7" fill="#FFFFFF"/>
+            <path d="M28 26L39 32L28 38V26Z" fill="#6366F1"/>
+            <path d="M25 48H39" stroke="#CCFBF1" stroke-width="3.5" stroke-linecap="round"/>
+          </svg>
+        `,
+      };
+      return icons[theme] || icons.stream;
+    }
+
+    function getBannerArtworkSVG(theme = 'stream') {
+      if (theme === 'music') {
+        return `
+          <svg viewBox="0 0 240 150" class="w-full h-full max-h-40 drop-shadow-xl" fill="none">
+            <rect x="18" y="18" width="204" height="114" rx="22" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.28)" stroke-width="2"/>
+            <path d="M72 86C72 52 93 34 120 34C147 34 168 52 168 86" stroke="#F5D0FE" stroke-width="12" stroke-linecap="round"/>
+            <rect x="56" y="76" width="24" height="38" rx="12" fill="#F472B6" stroke="#FFFFFF" stroke-width="2.5"/>
+            <rect x="160" y="76" width="24" height="38" rx="12" fill="#F472B6" stroke="#FFFFFF" stroke-width="2.5"/>
+            <rect x="96" y="88" width="8" height="24" rx="4" fill="#8CF6E0"/>
+            <rect x="110" y="74" width="8" height="38" rx="4" fill="#FDE047"/>
+            <rect x="124" y="82" width="8" height="30" rx="4" fill="#F9A8D4"/>
+            <rect x="138" y="92" width="8" height="20" rx="4" fill="#A5F3FC"/>
+          </svg>
+        `;
+      }
+      if (theme === 'design') {
+        return `
+          <svg viewBox="0 0 240 150" class="w-full h-full max-h-40 drop-shadow-xl" fill="none">
+            <rect x="26" y="20" width="188" height="110" rx="22" fill="rgba(255,255,255,0.13)" stroke="rgba(255,255,255,0.3)" stroke-width="2"/>
+            <circle cx="88" cy="64" r="24" fill="#38BDF8" fill-opacity="0.8"/>
+            <circle cx="122" cy="84" r="28" fill="#F472B6" fill-opacity="0.75"/>
+            <circle cx="152" cy="62" r="22" fill="#8CF6E0" fill-opacity="0.8"/>
+            <path d="M156 38L165 47L116 96L107 87L156 38Z" fill="#FFFFFF"/>
+            <path d="M107 87C97 90 93 99 91 107C101 109 111 105 116 96L107 87Z" fill="#FDE047"/>
+          </svg>
+        `;
+      }
+      return `
+        <svg viewBox="0 0 240 150" class="w-full h-full max-h-40 drop-shadow-xl" fill="none">
+          <defs>
+            <linearGradient id="tvScr" x1="40" y1="24" x2="205" y2="115" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#8B5CF6"/>
+              <stop offset="1" stop-color="#3B1572"/>
+            </linearGradient>
+          </defs>
+          <!-- Smart TV -->
+          <rect x="38" y="24" width="164" height="92" rx="14" fill="url(#tvScr)" stroke="#E9D5FF" stroke-width="3.5"/>
+          <path d="M106 54L140 70L106 86V54Z" fill="#FFFFFF"/>
+          <path d="M98 124H142" stroke="#E9D5FF" stroke-width="5" stroke-linecap="round"/>
+          <!-- Crown Glow -->
+          <path d="M104 16l5-10 11 7 11-7 5 10H104z" fill="#FDE047"/>
+          <!-- Popcorn Bucket -->
+          <path d="M30 88H70L65 130H35L30 88Z" fill="#F5D0FE" stroke="#FFFFFF" stroke-width="2"/>
+          <circle cx="38" cy="83" r="8" fill="#FEF08A"/>
+          <circle cx="50" cy="79" r="9" fill="#FDE047"/>
+          <circle cx="62" cy="83" r="8" fill="#FEF08A"/>
+          <!-- Sparkles -->
+          <circle cx="192" cy="40" r="3" fill="#8CF6E0"/>
+          <circle cx="54" cy="44" r="2.5" fill="#FDE047"/>
+        </svg>
+      `;
+    }
+
+    function getRankRibbonSVG(rank) {
+      const palette = [
+        { bg: '#FDE047', border: '#EAB308', text: '#713F12' },
+        { bg: '#E2E8F0', border: '#94A3B8', text: '#334155' },
+        { bg: '#FDBA74', border: '#EA580C', text: '#7C2D12' },
+      ];
+      const c = palette[rank - 1] || { bg: '#EDE9FE', border: '#A78BFA', text: '#4C1D95' };
+      return `
+        <div class="w-8 h-10 rounded-xl flex items-center justify-center font-display font-bold text-sm shrink-0 shadow-sm"
+          style="background:${c.bg}; border:2px solid ${c.border}; color:${c.text};">
+          ${rank}
+        </div>
+      `;
+    }
+
+    /* ------------------------------------------------------------
+       5. TOAST & MODAL UTILITIES
+       ------------------------------------------------------------ */
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toastContainer');
+      if (!container) return;
+
+      const styles = {
+        success: 'bg-[#2E115A] text-white border-[#8CF6E0]',
+        info: 'bg-[#4C1D95] text-white border-purple-300',
+        error: 'bg-rose-600 text-white border-rose-200',
+      };
+      const icons = { success: '✅', info: '✨', error: '⚠️' };
+
+      const el = document.createElement('div');
+      el.className = `pointer-events-auto px-4 py-3 rounded-2xl border-2 shadow-xl flex items-center gap-2.5 text-xs sm:text-sm font-display animate-pop ${styles[type] || styles.success}`;
+      el.innerHTML = `<span class="text-base shrink-0">${icons[type] || '✨'}</span><span class="leading-snug">${escapeHTML(message)}</span>`;
+      container.appendChild(el);
+
+      setTimeout(() => {
+        el.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(-6px)';
+        setTimeout(() => el.remove(), 260);
+      }, 2800);
+    }
+
+    function copyText(text, label = 'ข้อความ') {
+      try {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.style.position = 'fixed';
+        textarea.style.top = '-9999px';
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        showToast(`คัดลอก${label}เรียบร้อย: ${text}`, 'success');
+      } catch (err) {
+        showToast(`ไม่สามารถคัดลอกอัตโนมัติได้ กรุณาคัดลอก: ${text}`, 'info');
+      }
+    }
+
+    function copyBankAccount() {
+      copyText(state.settings.accountNumber, 'เลขที่บัญชี');
+    }
+
+    function openInfoModal() {
+      document.getElementById('infoModal')?.classList.remove('hidden');
+    }
+
+    function closeInfoModal() {
+      document.getElementById('infoModal')?.classList.add('hidden');
+    }
+
+    function openResetConfirmModal() {
+      document.getElementById('resetConfirmModal')?.classList.remove('hidden');
+    }
+
+    function closeResetConfirmModal() {
+      document.getElementById('resetConfirmModal')?.classList.add('hidden');
+    }
+
+    function confirmResetDemoData() {
+      closeResetConfirmModal();
+      resetDemoData();
+    }
+
+    /* ------------------------------------------------------------
+       6. NAVIGATION & HEADER SYNCHRONIZATION
+       ------------------------------------------------------------ */
+    const HEADER_CONFIG = {
+      home: { title: 'แอปพรีเมียม', back: false },
+      category: { title: 'หมวดหมู่แอป', back: true },
+      detail: { title: 'รายละเอียดแอป', back: true },
+      cart: { title: 'ตะกร้าสินค้า', back: false },
+      checkout: { title: 'ชำระเงิน', back: true },
+      recent: { title: 'รายการสั่งซื้อล่าสุด', back: true },
+      contact: { title: 'ติดต่อ / กฎต่างๆ', back: false },
+    };
+
+    function navigateTo(page) {
+      if (state.mode !== 'customer') {
+        state.mode = 'customer';
+        updateModeUI();
+      }
+      if (page !== state.currentPage) {
+        state.previousPage = state.currentPage;
+      }
+      state.currentPage = page;
+      renderCustomerPage();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function goBack() {
+      if (state.currentPage === 'detail') {
+        navigateTo(state.previousPage === 'category' ? 'category' : 'home');
+        return;
+      }
+      if (state.currentPage === 'checkout') {
+        navigateTo('cart');
+        return;
+      }
+      navigateTo('home');
+    }
+
+    function toggleAppMode() {
+      state.mode = state.mode === 'customer' ? 'admin' : 'customer';
+      updateModeUI();
+      if (state.mode === 'admin') {
+        renderAdminView();
+        showToast('เข้าสู่ระบบหลังบ้าน (Demo Mode)', 'info');
+      } else {
+        renderCustomerPage();
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function updateModeUI() {
+      const custView = document.getElementById('customerView');
+      const admView = document.getElementById('adminView');
+      const bottomNav = document.getElementById('bottomNav');
+      const toggleBtn = document.getElementById('adminToggleBtn');
+
+      if (state.mode === 'admin') {
+        custView.classList.add('hidden');
+        bottomNav.classList.add('hidden');
+        admView.classList.remove('hidden');
+        toggleBtn.title = 'กลับหน้าร้านลูกค้า';
+        toggleBtn.classList.add('bg-[#8CF6E0]', 'text-[#2B1055]');
+        toggleBtn.classList.remove('bg-white/90', 'text-[#5B21B6]');
+      } else {
+        admView.classList.add('hidden');
+        custView.classList.remove('hidden');
+        bottomNav.classList.remove('hidden');
+        toggleBtn.title = 'เข้าสู่ระบบหลังบ้าน (Admin Demo)';
+        toggleBtn.classList.remove('bg-[#8CF6E0]', 'text-[#2B1055]');
+        toggleBtn.classList.add('bg-white/90', 'text-[#5B21B6]');
+      }
+    }
+
+    function updateHeaderAndNav() {
+      const cfg = HEADER_CONFIG[state.currentPage] || HEADER_CONFIG.home;
+      const subpageBar = document.getElementById('headerSubpageBar');
+      const subpageTitle = document.getElementById('headerSubpageTitle');
+      const backBtn = document.getElementById('headerBackBtn');
+
+      if (!cfg.back) {
+        if (subpageBar) subpageBar.classList.add('hidden');
+        if (backBtn) backBtn.classList.add('hidden');
+      } else {
+        if (subpageBar) subpageBar.classList.remove('hidden');
+        if (backBtn) backBtn.classList.remove('hidden');
+        if (subpageTitle) {
+          subpageTitle.textContent = state.currentPage === 'category'
+            ? `หมวด${state.selectedCategory}`
+            : cfg.title;
+        }
+      }
+
+      // Active Bottom Nav Highlight
+      const activeNavMap = {
+        home: 'nav-home',
+        category: 'nav-home',
+        detail: 'nav-home',
+        recent: 'nav-home',
+        cart: 'nav-cart',
+        checkout: 'nav-cart',
+        contact: 'nav-contact',
+      };
+      ['nav-home', 'nav-cart', 'nav-contact'].forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        if (id === activeNavMap[state.currentPage]) {
+          el.classList.add('nav-pill-active');
+          el.classList.remove('text-white');
+        } else {
+          el.classList.remove('nav-pill-active');
+          el.classList.add('text-white');
+        }
+      });
+
+      // Cart Badge
+      const totalQty = state.cart.reduce((sum, item) => sum + item.qty, 0);
+      const badge = document.getElementById('navCartBadge');
+      if (badge) {
+        if (totalQty > 0) {
+          badge.textContent = totalQty;
+          badge.classList.remove('hidden');
+        } else {
+          badge.classList.add('hidden');
+        }
+      }
+    }
+
+    function renderCustomerPage() {
+      ['home', 'category', 'detail', 'cart', 'checkout', 'recent', 'contact'].forEach(p => {
+        const section = document.getElementById(`page-${p}`);
+        if (!section) return;
+        if (p === state.currentPage) {
+          section.classList.remove('hidden');
+        } else {
+          section.classList.add('hidden');
+        }
+      });
+
+      updateHeaderAndNav();
+
+      if (state.currentPage === 'home') renderHomePage();
+      if (state.currentPage === 'category') renderCategoryPage();
+      if (state.currentPage === 'detail') renderDetailPage();
+      if (state.currentPage === 'cart') renderCartPage();
+      if (state.currentPage === 'checkout') renderCheckoutPage();
+      if (state.currentPage === 'recent') renderRecentOrdersPage();
+      if (state.currentPage === 'contact') renderContactPage();
+    }
+
+    /* ------------------------------------------------------------
+       7. PAGE 1: HOME PAGE (หมวดหมู่ + โปรโมชั่น + รายการสั่งซื้อล่าสุด)
+       ------------------------------------------------------------ */
+    const CATEGORIES = [
+      { id: 'ดูหนัง', label: 'ดูหนัง', icon: '🎬', style: 'cat-mint' },
+      { id: 'ฟังเพลง', label: 'ฟังเพลง', icon: '🎧', style: 'cat-pink' },
+      { id: 'แต่งรูป', label: 'แต่งรูป', icon: '🖼️', style: 'cat-cyan' },
+    ];
+
+    function renderHomePage() {
+      // 1. Category Pills (วงสีเขียว)
+      const catEl = document.getElementById('categoryPillsContainer');
+      catEl.innerHTML = CATEGORIES.map(cat => `
+        <button type="button" onclick="selectCategory('${cat.id}')"
+          class="cat-pill ${cat.style} rounded-full py-2.5 px-2.5 sm:px-3.5 flex items-center justify-center gap-1.5 sm:gap-2 font-display font-bold text-xs sm:text-base text-[#31145E]">
+          <span class="text-base sm:text-lg shrink-0">${cat.icon}</span>
+          <span class="truncate">${cat.label}</span>
+        </button>
+      `).join('');
+
+      document.getElementById('activeCategoryHint').textContent = 'แตะเพื่อเข้าดูแต่ละหมวด';
+
+      // Sync search input UI
+      const searchInput = document.getElementById('homeSearchInput');
+      const clearBtn = document.getElementById('clearSearchBtn');
+      if (searchInput && searchInput.value !== state.searchQuery) {
+        searchInput.value = state.searchQuery;
+      }
+      if (clearBtn) {
+        clearBtn.classList.toggle('hidden', !state.searchQuery);
+      }
+
+      // 2. Promo Carousel (วงสีดำ)
+      renderFeaturedBanner();
+
+      // 3. Recent Orders / Search Results (วงสีน้ำเงิน)
+      renderAppsList();
+    }
+
+    function selectCategory(catId) {
+      openCategoryPage(catId);
+    }
+
+    function handleSearchInput(val) {
+      state.searchQuery = (val || '').trim();
+      const clearBtn = document.getElementById('clearSearchBtn');
+      if (clearBtn) {
+        clearBtn.classList.toggle('hidden', !state.searchQuery);
+      }
+      renderAppsList();
+    }
+
+    function clearHomeSearch() {
+      state.searchQuery = '';
+      const input = document.getElementById('homeSearchInput');
+      if (input) input.value = '';
+      document.getElementById('clearSearchBtn')?.classList.add('hidden');
+      renderAppsList();
+    }
+
+    function focusPopularList() {
+      const target = document.getElementById('popularAppsSection');
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function resetHomeFilters() {
+      clearHomeSearch();
+      renderHomePage();
+    }
+
+    function getFeaturedApps() {
+      const featured = state.apps.filter(a => a.featured);
+      return featured.length ? featured : state.apps.slice(0, 3);
+    }
+
+    function renderFeaturedBanner() {
+      const featuredApps = getFeaturedApps();
+      if (featuredApps.length === 0) return;
+      if (state.bannerIndex >= featuredApps.length) state.bannerIndex = 0;
+
+      const app = featuredApps[state.bannerIndex];
+      const basePkg = app.packages[0] || { days: 30, price: 99, label: '30 วัน' };
+      const slot = document.getElementById('featuredBannerSlot');
+
+      slot.innerHTML = `
+        <div class="jelly-dark-card rounded-[2rem] p-4 sm:p-6 grid grid-cols-1 sm:grid-cols-12 gap-4 items-center transition-all">
+          <!-- Illustrated Scene -->
+          <div class="sm:col-span-6 h-36 sm:h-44 flex items-center justify-center relative z-10 cursor-pointer" onclick="openAppDetail('${app.id}')">
+            <span class="absolute top-0 left-0 px-2.5 py-1 rounded-full bg-gradient-to-r from-[#FFE066] to-[#FFB84D] text-[#3B1572] font-display font-bold text-[11px] shadow">
+              🔥 โปรโมชั่น
+            </span>
+            ${getBannerArtworkSVG(app.theme)}
+          </div>
+
+          <!-- App Info & CTA -->
+          <div class="sm:col-span-6 relative z-10 space-y-3 text-white">
+            <div class="flex items-center gap-3">
+              ${getAppIconSVG(app.theme, 'w-14 h-14 sm:w-16 sm:h-16')}
+              <div class="min-w-0">
+                <h3 class="font-display font-bold text-xl sm:text-2xl leading-tight truncate">${escapeHTML(app.name)}</h3>
+                <span class="inline-flex items-center gap-1 mt-1 px-2.5 py-0.5 rounded-full bg-white/90 text-[#3B1572] font-display font-semibold text-xs">
+                  👑 ${escapeHTML(app.badge)}
+                </span>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-3 text-purple-100">
+              <span class="inline-flex items-center gap-1.5 text-sm sm:text-base font-medium">
+                📅 ${escapeHTML(basePkg.label)}
+              </span>
+              <span class="opacity-40">|</span>
+              <span class="font-display font-bold text-2xl sm:text-3xl text-white">฿${basePkg.price}</span>
+            </div>
+
+            <button type="button" onclick="openAppDetail('${app.id}')"
+              class="jelly-btn-mint w-full py-2.5 sm:py-3 rounded-full font-display font-bold text-base sm:text-lg flex items-center justify-center gap-2">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+              สั่งซื้อ
+            </button>
+          </div>
+        </div>
+      `;
+
+      // Carousel Dots
+      const dotsEl = document.getElementById('featuredBannerDots');
+      dotsEl.innerHTML = featuredApps.map((_, idx) => `
+        <button type="button" onclick="setBannerIndex(${idx})" aria-label="สไลด์ ${idx + 1}"
+          class="h-2.5 rounded-full transition-all ${idx === state.bannerIndex ? 'w-7 bg-[#6A2CC5]' : 'w-2.5 bg-purple-300 hover:bg-purple-400'}">
+        </button>
+      `).join('');
+    }
+
+    function stepBanner(delta) {
+      const len = getFeaturedApps().length;
+      if (!len) return;
+      state.bannerIndex = (state.bannerIndex + delta + len) % len;
+      renderFeaturedBanner();
+    }
+
+    function setBannerIndex(idx) {
+      state.bannerIndex = idx;
+      renderFeaturedBanner();
+    }
+
+    function renderAppsList() {
+      const container = document.getElementById('appsListContainer');
+      const titleEl = document.getElementById('popularListTitle');
+      const iconEl = document.getElementById('popularListIcon');
+
+      // หากมีการพิมพ์ค้นหาในช่องค้นหาด้านบน ให้แสดงผลค้นหาแอปที่ตรงกัน
+      if (state.searchQuery) {
+        const q = state.searchQuery.toLowerCase();
+        const filtered = state.apps.filter(app =>
+          app.name.toLowerCase().includes(q) ||
+          app.category.toLowerCase().includes(q) ||
+          app.features.some(f => f.title.toLowerCase().includes(q))
+        );
+
+        if (iconEl) iconEl.textContent = '🔍';
+        titleEl.textContent = `ผลการค้นหา (${filtered.length})`;
+
+        if (filtered.length === 0) {
+          container.innerHTML = `
+            <div class="md:col-span-2 jelly-card p-8 text-center space-y-3">
+              <div class="text-4xl">🔍</div>
+              <p class="font-display font-bold text-lg text-[#31145E]">ไม่พบแอปที่ค้นหา</p>
+              <p class="text-sm text-[#6E5596]">ลองค้นหาด้วยคำอื่น หรือล้างคำค้นหาเพื่อดูรายการสั่งซื้อล่าสุด</p>
+              <button type="button" onclick="resetHomeFilters()" class="jelly-btn-mint px-5 py-2 rounded-full font-display font-bold text-sm">
+                ล้างคำค้นหา
+              </button>
+            </div>
+          `;
+          return;
+        }
+
+        container.innerHTML = filtered.map((app, index) => {
+          const basePkg = app.packages[0] || { days: 30, price: 99, label: '30 วัน' };
+          return `
+            <div onclick="openAppDetail('${app.id}')"
+              class="jelly-card p-3 sm:p-4 flex items-center gap-2.5 sm:gap-3.5 cursor-pointer hover:-translate-y-0.5 transition group">
+              ${getRankRibbonSVG(index + 1)}
+              ${getAppIconSVG(app.theme, 'w-12 h-12 sm:w-14 sm:h-14')}
+
+              <div class="flex-1 min-w-0">
+                <h3 class="font-display font-bold text-base sm:text-lg text-[#31145E] truncate group-hover:text-[#6227B8] transition">
+                  ${escapeHTML(app.name)}
+                </h3>
+                <div class="flex items-center gap-2 mt-0.5 flex-wrap">
+                  <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-purple-100/90 text-[#5929A8] font-display font-semibold text-[11px]">
+                    👑 ${escapeHTML(app.badge)}
+                  </span>
+                  <span class="text-xs text-[#6E5596]">📅 ${escapeHTML(basePkg.label)}</span>
+                </div>
+              </div>
+
+              <div class="flex flex-col sm:flex-row items-end sm:items-center gap-1.5 sm:gap-2.5 shrink-0">
+                <span class="font-display font-bold text-lg sm:text-xl text-[#31145E]">฿${basePkg.price}</span>
+                <button type="button" onclick="event.stopPropagation(); openAppDetail('${app.id}')"
+                  class="jelly-btn-mint px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full font-display font-bold text-xs sm:text-sm flex items-center gap-1.5">
+                  🛒 สั่งซื้อ
+                </button>
+              </div>
+            </div>
+          `;
+        }).join('');
+        return;
+      }
+
+      // ค่าเริ่มต้นในหน้าหลัก (วงสีน้ำเงิน): แสดงรายการสั่งซื้อล่าสุด (ชื่อลูกค้า + รายการที่ซื้อ)
+      if (iconEl) iconEl.textContent = '🧾';
+      titleEl.textContent = 'รายการสั่งซื้อล่าสุด';
+
+      if (state.orders.length === 0) {
+        container.innerHTML = `
+          <div class="md:col-span-2 jelly-card p-8 text-center space-y-2">
+            <div class="text-4xl">🧾</div>
+            <p class="font-display font-bold text-lg text-[#31145E]">ยังไม่มีรายการสั่งซื้อล่าสุด</p>
+            <p class="text-xs sm:text-sm text-[#6E5596]">เมื่อมีการสั่งซื้อ รายการล่าสุดจะแสดงที่นี่ทันที</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = state.orders.map(order => {
+        const firstItem = order.items[0] || { name: 'แอปพรีเมียม', theme: 'stream', days: 30 };
+        const customerName = order.customerName || order.customerLineId || order.customerEmail || 'ลูกค้า';
+        const purchasedText = order.items
+          .map(it => `${it.name} (${it.label || `${it.days} วัน`}${it.qty > 1 ? ` x${it.qty}` : ''})`)
+          .join(', ');
+
+        return `
+          <div onclick="openRecentOrderDetail('${order.id}')"
+            class="jelly-card p-4 flex items-center gap-3.5 cursor-pointer hover:-translate-y-0.5 transition group">
+            ${getAppIconSVG(firstItem.theme, 'w-12 h-12 sm:w-14 sm:h-14')}
+
+            <div class="flex-1 min-w-0 space-y-1">
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full bg-purple-100 text-[#6227B8] flex items-center justify-center text-xs shrink-0">👤</span>
+                <p class="font-display font-bold text-sm sm:text-base text-[#31145E] group-hover:text-[#6227B8] transition truncate">
+                  ${escapeHTML(customerName)}
+                </p>
+              </div>
+              <p class="text-xs sm:text-sm text-[#5A3B8C] line-clamp-2 leading-snug">
+                <span class="font-display font-semibold text-[#6E5596]">รายการที่ซื้อ:</span>
+                ${escapeHTML(purchasedText)}
+              </p>
+            </div>
+
+            <span class="text-purple-400 group-hover:text-[#6227B8] font-bold text-lg shrink-0 pl-1">›</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openRecentOrderDetail(orderId) {
+      state.trackedOrderId = orderId;
+      navigateTo('recent');
+    }
+
+    /* ------------------------------------------------------------
+       8. PAGE 2: CATEGORY PAGE (การ์ดสินค้าขนาด 1:1)
+       ------------------------------------------------------------ */
+    function openCategoryPage(catId) {
+      state.selectedCategory = catId;
+      navigateTo('category');
+    }
+
+    function renderCategoryPage() {
+      const catMeta = CATEGORIES.find(c => c.id === state.selectedCategory) || CATEGORIES[0];
+      document.getElementById('categoryPageTitle').textContent = `หมวด${catMeta.label}`;
+      document.getElementById('categoryPageIcon').textContent = catMeta.icon;
+
+      const apps = state.apps.filter(a => a.category === state.selectedCategory);
+      document.getElementById('categoryAppsCount').textContent = `แอปทั้งหมดในหมวด${catMeta.label} (${apps.length})`;
+
+      const grid = document.getElementById('categoryAppsGrid');
+      if (apps.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full jelly-card p-8 text-center space-y-2">
+            <div class="text-4xl">📦</div>
+            <p class="font-display font-bold text-base text-[#31145E]">ยังไม่มีแอปในหมวดนี้</p>
+            <p class="text-xs text-[#6E5596]">คุณสามารถเพิ่มแอปในหมวดนี้ได้จากระบบหลังบ้าน (ไอคอนฟันเฟืองมุมขวาบน)</p>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = apps.map(app => {
+        const basePkg = app.packages[0] || { days: 30, price: 99, label: '30 วัน' };
+        return `
+          <div onclick="openAppDetail('${app.id}')"
+            class="jelly-card aspect-square p-3 sm:p-4 flex flex-col items-center justify-between gap-2 text-center cursor-pointer hover:-translate-y-1 transition group relative overflow-hidden">
+            <span class="px-2.5 py-0.5 rounded-full bg-purple-100/95 text-[#5929A8] font-display font-semibold text-[10px] sm:text-xs shrink-0">
+              👑 ${escapeHTML(app.badge)}
+            </span>
+
+            <div class="flex flex-col items-center justify-center gap-1.5 my-auto w-full min-h-0">
+              ${getAppIconSVG(app.theme, 'w-11 h-11 sm:w-14 sm:h-14 group-hover:scale-105 transition')}
+              <h3 class="font-display font-bold text-xs sm:text-base text-[#31145E] leading-snug line-clamp-1 w-full group-hover:text-[#6227B8] transition">
+                ${escapeHTML(app.name)}
+              </h3>
+              <p class="font-display font-bold text-sm sm:text-lg text-[#6227B8] leading-none">
+                ฿${basePkg.price}
+                <span class="text-[10px] sm:text-xs font-normal text-[#6E5596]">/${escapeHTML(basePkg.label)}</span>
+              </p>
+            </div>
+
+            <button type="button" onclick="event.stopPropagation(); openAppDetail('${app.id}')"
+              class="jelly-btn-mint w-full py-1.5 sm:py-2 px-3 rounded-full font-display font-bold text-[11px] sm:text-sm flex items-center justify-center gap-1 shrink-0">
+              เลือกแพ็กเกจ
+            </button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    /* ------------------------------------------------------------
+       9. PAGE 3: APP DETAIL & PACKAGE SELECTION
+       ------------------------------------------------------------ */
+    function openAppDetail(appId) {
+      const app = state.apps.find(a => a.id === appId);
+      if (!app) return;
+      state.selectedAppId = app.id;
+      state.selectedPackageIndex = 0;
+      state.selectedPackageDays = (app.packages[0] && app.packages[0].days) || 30;
+      navigateTo('detail');
+    }
+
+    function selectPackage(pkgIndex) {
+      const app = state.apps.find(a => a.id === state.selectedAppId) || state.apps[0];
+      if (!app || !app.packages[pkgIndex]) return;
+      state.selectedPackageIndex = pkgIndex;
+      state.selectedPackageDays = app.packages[pkgIndex].days;
+      renderDetailPage();
+    }
+
+    function renderDetailPage() {
+      const app = state.apps.find(a => a.id === state.selectedAppId) || state.apps[0];
+      if (!app) return;
+
+      if (!app.packages[state.selectedPackageIndex]) {
+        state.selectedPackageIndex = 0;
+      }
+      const selectedPkg = app.packages[state.selectedPackageIndex] || app.packages[0];
+      state.selectedPackageDays = selectedPkg.days;
+
+      // Hero Card
+      document.getElementById('detailHeroCard').innerHTML = `
+        <div class="grid grid-cols-1 sm:grid-cols-12 gap-4 items-center relative z-10">
+          <div class="sm:col-span-6 h-36 sm:h-40 flex items-center justify-center">
+            ${getBannerArtworkSVG(app.theme)}
+          </div>
+          <div class="sm:col-span-6 flex items-center gap-3.5">
+            ${getAppIconSVG(app.theme, 'w-16 h-16 sm:w-20 sm:h-20')}
+            <div class="space-y-1.5">
+              <h2 class="font-display font-bold text-2xl sm:text-3xl leading-tight">${escapeHTML(app.name)}</h2>
+              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#C7FFF3] text-[#2B1055] font-display font-bold text-xs sm:text-sm shadow">
+                ✨ หมวด${escapeHTML(app.category)}
+              </span>
+            </div>
+          </div>
+        </div>
+      `;
+
+      // Packages Grid (รองรับหลายแพ็กเกจ)
+      document.getElementById('detailPackagesGrid').innerHTML = app.packages.map((pkg, idx) => {
+        const isActive = idx === state.selectedPackageIndex;
+        return `
+          <button type="button" onclick="selectPackage(${idx})"
+            class="rounded-2xl p-3.5 sm:p-4 flex items-center justify-between gap-2 transition text-left border-2 ${
+              isActive
+                ? 'bg-gradient-to-r from-[#6D28D9] to-[#4C1D95] text-white border-[#8CF6E0] shadow-lg scale-[1.01]'
+                : 'bg-white/95 text-[#31145E] border-purple-200 hover:border-purple-400'
+            }">
+            <div class="flex items-center gap-2 min-w-0">
+              <span class="w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-xs font-bold ${
+                isActive ? 'bg-[#8CF6E0] text-[#2B1055]' : 'border-2 border-purple-300 text-transparent'
+              }">✓</span>
+              <div class="truncate">
+                <span class="font-display font-bold text-sm sm:text-base">📅 ${escapeHTML(pkg.label)}</span>
+              </div>
+            </div>
+            <span class="font-display font-bold text-lg sm:text-2xl shrink-0">฿${pkg.price}</span>
+          </button>
+        `;
+      }).join('');
+
+      // Features Card
+      document.getElementById('detailFeaturesCard').innerHTML = app.features.map(f => `
+        <div class="py-3 first:pt-0 last:pb-0 flex items-center gap-3.5">
+          <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#8B4BF0] to-[#5E21B8] text-white flex items-center justify-center text-xl shrink-0 shadow">
+            ${f.icon || '✨'}
+          </div>
+          <div>
+            <p class="font-display font-bold text-sm sm:text-base text-[#31145E]">${escapeHTML(f.title)}</p>
+            <p class="text-xs sm:text-sm text-[#6E5596]">${escapeHTML(f.desc)}</p>
+          </div>
+        </div>
+      `).join('');
+
+      document.getElementById('detailTotalPrice').textContent = `฿${selectedPkg.price.toLocaleString()}`;
+    }
+
+    function addSelectedToCart(goCheckout = false) {
+      const app = state.apps.find(a => a.id === state.selectedAppId);
+      if (!app) return;
+      const pkg = app.packages[state.selectedPackageIndex] || app.packages[0];
+
+      const existing = state.cart.find(c =>
+        c.appId === app.id && (c.label ? c.label === pkg.label : c.days === pkg.days)
+      );
+      if (existing) {
+        existing.qty += 1;
+      } else {
+        state.cart.push({ appId: app.id, days: pkg.days, label: pkg.label, qty: 1 });
+      }
+      saveStateToStorage();
+      updateHeaderAndNav();
+
+      if (goCheckout) {
+        navigateTo('checkout');
+      } else {
+        showToast(`เพิ่ม ${app.name} (${pkg.label}) ลงตะกร้าแล้ว`, 'success');
+      }
+    }
+
+    /* ------------------------------------------------------------
+       10. PAGE 4: CART PAGE
+       ------------------------------------------------------------ */
+    function getResolvedCartItems() {
+      return state.cart
+        .map((c, idx) => {
+          const app = state.apps.find(a => a.id === c.appId);
+          if (!app) return null;
+          const pkg = app.packages.find(p => (c.label && p.label === c.label) || p.days === c.days) || app.packages[0];
+          return {
+            cartIndex: idx,
+            appId: app.id,
+            name: app.name,
+            badge: app.badge,
+            theme: app.theme,
+            days: pkg.days,
+            label: pkg.label,
+            price: pkg.price,
+            qty: c.qty,
+            lineTotal: pkg.price * c.qty,
+          };
+        })
+        .filter(Boolean);
+    }
+
+    function renderCartPage() {
+      const items = getResolvedCartItems();
+      const totalCount = items.reduce((s, i) => s + i.qty, 0);
+      const grandTotal = items.reduce((s, i) => s + i.lineTotal, 0);
+
+      document.getElementById('cartItemCountLabel').textContent = `(${totalCount} รายการ)`;
+      document.getElementById('cartSummaryCountText').textContent = `ยอดรวมสินค้า (${totalCount} รายการ)`;
+      document.getElementById('cartSubtotalText').textContent = `฿${grandTotal.toLocaleString()}`;
+      document.getElementById('cartGrandTotalText').textContent = `฿${grandTotal.toLocaleString()}`;
+
+      const container = document.getElementById('cartItemsContainer');
+      const summaryBox = document.getElementById('cartSummaryBox');
+
+      if (items.length === 0) {
+        summaryBox.classList.add('hidden');
+        container.innerHTML = `
+          <div class="jelly-card p-8 text-center space-y-3">
+            <div class="text-5xl">🛒</div>
+            <h3 class="font-display font-bold text-lg text-[#31145E]">ตะกร้าสินค้ายังว่างอยู่</h3>
+            <p class="text-xs sm:text-sm text-[#6E5596]">เลือกชมหมวดหมู่แอปพรีเมียมที่ชอบแล้วกดเพิ่มลงตะกร้าได้เลยค่ะ</p>
+            <button type="button" onclick="navigateTo('home')" class="jelly-btn-mint px-6 py-2.5 rounded-full font-display font-bold text-sm">
+              🛍️ เลือกซื้อแอป
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      summaryBox.classList.remove('hidden');
+      container.innerHTML = items.map(item => `
+        <div class="jelly-card p-4 flex items-center gap-3 sm:gap-4">
+          ${getAppIconSVG(item.theme, 'w-14 h-14 sm:w-16 sm:h-16')}
+          <div class="flex-1 min-w-0">
+            <h3 class="font-display font-bold text-base sm:text-lg text-[#31145E] truncate">${escapeHTML(item.name)}</h3>
+            <div class="flex items-center gap-2 mt-0.5 flex-wrap">
+              <span class="px-2 py-0.5 rounded-full bg-purple-100 text-[#5929A8] font-display font-semibold text-[11px]">👑 ${escapeHTML(item.badge)}</span>
+              <span class="text-xs text-[#6E5596]">📅 ${escapeHTML(item.label)}</span>
+            </div>
+            <div class="flex items-center gap-2 mt-2">
+              <button type="button" onclick="updateCartQty(${item.cartIndex}, -1)"
+                class="w-7 h-7 rounded-full bg-purple-100 hover:bg-purple-200 text-[#4F2199] font-bold flex items-center justify-center">-</button>
+              <span class="font-display font-bold text-sm w-6 text-center">${item.qty}</span>
+              <button type="button" onclick="updateCartQty(${item.cartIndex}, 1)"
+                class="w-7 h-7 rounded-full bg-purple-100 hover:bg-purple-200 text-[#4F2199] font-bold flex items-center justify-center">+</button>
+            </div>
+          </div>
+          <div class="flex flex-col items-end gap-2 shrink-0">
+            <span class="font-display font-bold text-xl sm:text-2xl text-[#31145E]">฿${item.lineTotal.toLocaleString()}</span>
+            <button type="button" onclick="removeCartItem(${item.cartIndex})" aria-label="ลบสินค้า"
+              class="w-9 h-9 rounded-xl bg-purple-100/90 hover:bg-rose-100 text-[#6227B8] hover:text-rose-600 transition flex items-center justify-center">
+              🗑️
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function updateCartQty(index, delta) {
+      if (!state.cart[index]) return;
+      state.cart[index].qty += delta;
+      if (state.cart[index].qty <= 0) {
+        state.cart.splice(index, 1);
+      }
+      saveStateToStorage();
+      updateHeaderAndNav();
+      renderCartPage();
+    }
+
+    function removeCartItem(index) {
+      state.cart.splice(index, 1);
+      saveStateToStorage();
+      updateHeaderAndNav();
+      renderCartPage();
+      showToast('ลบรายการออกจากตะกร้าแล้ว', 'info');
+    }
+
+    /* ------------------------------------------------------------
+       11. PAGE 5: CHECKOUT PAGE (LINE ID + SLIP UPLOAD)
+       ------------------------------------------------------------ */
+    function renderCheckoutPage() {
+      const items = getResolvedCartItems();
+      if (items.length === 0) {
+        showToast('ยังไม่มีสินค้าในตะกร้า กรุณาเลือกแอปก่อนค่ะ', 'info');
+        navigateTo('cart');
+        return;
+      }
+
+      const totalCount = items.reduce((s, i) => s + i.qty, 0);
+      const grandTotal = items.reduce((s, i) => s + i.lineTotal, 0);
+
+      document.getElementById('checkoutItemsCount').textContent = totalCount;
+      document.getElementById('checkoutItemsPreview').textContent = items.map(i => `${i.name} (${i.label})`).join(' + ');
+      document.getElementById('checkoutTotalAmount').textContent = `฿${grandTotal.toLocaleString()}`;
+
+      document.getElementById('checkoutBankName').textContent = state.settings.bankName;
+      document.getElementById('checkoutAccountNumber').textContent = state.settings.accountNumber;
+      document.getElementById('checkoutAccountName').textContent = `ชื่อบัญชี: ${state.settings.accountName}`;
+
+      renderSlipUploadUI();
+    }
+
+    function renderSlipUploadUI() {
+      const emptyEl = document.getElementById('slipEmptyState');
+      const previewEl = document.getElementById('slipPreviewState');
+      const imgEl = document.getElementById('slipPreviewImg');
+      const nameEl = document.getElementById('slipFileName');
+
+      if (state.uploadedSlip) {
+        emptyEl.classList.add('hidden');
+        previewEl.classList.remove('hidden');
+        imgEl.src = state.uploadedSlip.previewUrl;
+        nameEl.textContent = state.uploadedSlip.name;
+      } else {
+        previewEl.classList.add('hidden');
+        emptyEl.classList.remove('hidden');
+        imgEl.src = '';
+      }
+    }
+
+    function handleSlipFile(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      if (file.size > 10 * 1024 * 1024) {
+        showToast('ขนาดไฟล์ต้องไม่เกิน 10 MB', 'error');
+        return;
+      }
+      const previewUrl = URL.createObjectURL(file);
+      state.uploadedSlip = { name: file.name, previewUrl, isDemoGenerated: false };
+      renderSlipUploadUI();
+      showToast('แนบสลิปเรียบร้อยแล้ว', 'success');
+    }
+
+    function useDemoSlip() {
+      state.uploadedSlip = {
+        name: 'demo-transfer-slip.png',
+        previewUrl: DEMO_SLIP_PLACEHOLDER,
+        isDemoGenerated: true,
+      };
+      renderSlipUploadUI();
+      showToast('ใส่สลิปจำลองสำหรับทดสอบแล้ว', 'info');
+    }
+
+    function clearSlip() {
+      state.uploadedSlip = null;
+      const input = document.getElementById('slipFileInput');
+      if (input) input.value = '';
+      renderSlipUploadUI();
+    }
+
+    function submitOrder(event) {
+      event.preventDefault();
+      const items = getResolvedCartItems();
+      if (items.length === 0) {
+        showToast('ไม่มีสินค้าในตะกร้า', 'error');
+        navigateTo('cart');
+        return;
+      }
+
+      const nameInput = document.getElementById('customerNameInput');
+      const customerName = (nameInput?.value || '').trim();
+      if (!customerName) {
+        showToast('กรุณากรอกชื่อลูกค้า', 'error');
+        nameInput?.focus();
+        return;
+      }
+
+      const lineInput = document.getElementById('customerLineIdInput');
+      const lineId = (lineInput?.value || '').trim();
+      if (!lineId || lineId.length < 2) {
+        showToast('กรุณากรอกไอดีไลน์สำหรับรับสินค้า', 'error');
+        lineInput?.focus();
+        return;
+      }
+
+      if (!state.uploadedSlip) {
+        showToast('กรุณาแนบสลิป หรือกดปุ่ม "ใช้สลิปจำลอง"', 'error');
+        return;
+      }
+
+      // Generate incremental Order ID
+      const existingNums = state.orders
+        .map(o => parseInt(String(o.id).replace(/\D/g, ''), 10))
+        .filter(n => !isNaN(n));
+      const nextNum = (existingNums.length ? Math.max(...existingNums) : 1032) + 1;
+      const newOrderId = `#JA${nextNum}`;
+      const grandTotal = items.reduce((s, i) => s + i.lineTotal, 0);
+      const timeNow = formatNowTime();
+
+      const newOrder = {
+        id: newOrderId,
+        customerName,
+        items: items.map(i => ({
+          appId: i.appId,
+          name: i.name,
+          theme: i.theme,
+          days: i.days,
+          label: i.label,
+          price: i.price,
+          qty: i.qty,
+        })),
+        total: grandTotal,
+        customerLineId: lineId,
+        status: 'pending_verify',
+        slipName: state.uploadedSlip.name,
+        slipDataUrl: state.uploadedSlip.previewUrl,
+        isSample: false,
+        timestamps: {
+          ordered: timeNow,
+          slip_attached: timeNow,
+          pending_verify: 'กำลังตรวจสอบการชำระเงิน',
+          delivered: 'รอการส่งมอบบริการ',
+        },
+      };
+
+      state.orders.unshift(newOrder);
+      state.cart = [];
+      state.uploadedSlip = null;
+      state.trackedOrderId = newOrderId;
+      if (nameInput) nameInput.value = '';
+      if (lineInput) lineInput.value = '';
+      clearSlip();
+      saveStateToStorage();
+
+      showToast(`สร้างออเดอร์ ${newOrderId} เรียบร้อยแล้ว (Demo)`, 'success');
+      navigateTo('recent');
+    }
+
+    /* ------------------------------------------------------------
+       12. PAGE 6: RECENT ORDERS & ORDER TRACKING TIMELINE
+       ------------------------------------------------------------ */
+    function renderRecentOrdersPage() {
+      const input = document.getElementById('trackOrderInput');
+      if (input) input.value = state.trackedOrderId || '';
+
+      // Quick Order Chips
+      const quickEl = document.getElementById('recentOrdersQuickList');
+      quickEl.innerHTML = state.orders.map(o => `
+        <button type="button" onclick="selectTrackedOrder('${o.id}')"
+          class="px-3.5 py-1.5 rounded-full font-display font-semibold text-xs shrink-0 transition border flex items-center gap-1.5 ${
+            o.id === state.trackedOrderId
+              ? 'bg-[#6227B8] text-white border-white shadow'
+              : 'bg-white/90 text-[#4F2199] border-purple-200 hover:bg-purple-50'
+          }">
+          <span>${escapeHTML(o.id)}</span>
+          <span class="px-1.5 py-0.5 rounded-full text-[10px] ${
+            o.isSample
+              ? (o.id === state.trackedOrderId ? 'bg-white/20 text-white' : 'bg-purple-100 text-[#6227B8]')
+              : 'bg-emerald-400 text-[#1E0B3B]'
+          }">${o.isSample ? 'ตัวอย่าง' : 'สร้างใหม่'}</span>
+        </button>
+      `).join('');
+
+      // Find order
+      const container = document.getElementById('trackResultContainer');
+      const query = (state.trackedOrderId || '').trim().toUpperCase();
+      const order = state.orders.find(o => o.id.toUpperCase() === query || o.id.toUpperCase() === `#${query}`);
+
+      if (!order) {
+        container.innerHTML = `
+          <div class="jelly-card p-8 text-center space-y-2">
+            <div class="text-4xl">🔎</div>
+            <p class="font-display font-bold text-lg text-[#31145E]">ไม่พบออเดอร์ "${escapeHTML(state.trackedOrderId)}"</p>
+            <p class="text-xs sm:text-sm text-[#6E5596]">ลองเลือกจากรายการด้านบน หรือตรวจสอบเลขออเดอร์อีกครั้ง</p>
+          </div>
+        `;
+        return;
+      }
+
+      const steps = [
+        { key: 'ordered', icon: '🧾', title: 'สั่งซื้อแล้ว', desc: order.timestamps?.ordered || '-' },
+        { key: 'slip_attached', icon: '🖼️', title: 'แนบสลิปแล้ว', desc: order.timestamps?.slip_attached || '-' },
+        { key: 'pending_verify', icon: '🔍', title: 'รอตรวจชำระ', desc: order.timestamps?.pending_verify || 'กำลังตรวจสอบการชำระเงิน' },
+        { key: 'delivered', icon: '📦', title: 'ส่งมอบแล้ว', desc: order.timestamps?.delivered || 'รอการส่งมอบบริการ' },
+      ];
+      const currentIdx = steps.findIndex(s => s.key === order.status);
+      const customerName = order.customerName || 'ลูกค้า';
+      const customerLine = order.customerLineId || order.customerEmail || '-';
+
+      container.innerHTML = `
+        <!-- Order Header Card -->
+        <div class="jelly-dark-card rounded-[2rem] p-5 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div class="relative z-10 flex items-center gap-3.5">
+            <div class="flex -space-x-3">
+              ${order.items.slice(0, 2).map(it => getAppIconSVG(it.theme, 'w-14 h-14')).join('')}
+            </div>
+            <div class="space-y-1">
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="font-display font-bold text-sm sm:text-base text-purple-200">ออเดอร์ ${escapeHTML(order.id)}</span>
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-display font-bold ${order.isSample ? 'bg-white/20 text-white' : 'bg-[#8CF6E0] text-[#2B1055]'}">
+                  ${order.isSample ? 'ข้อมูลตัวอย่าง' : 'ออเดอร์ทดสอบใหม่'}
+                </span>
+              </div>
+              <p class="text-xs sm:text-sm text-white/95 font-display">👤 ลูกค้า: <strong>${escapeHTML(customerName)}</strong></p>
+              <div class="space-y-0.5">
+                ${order.items.map(it => `<p class="font-display font-bold text-base sm:text-lg leading-tight">👑 ${escapeHTML(it.name)} <span class="text-xs font-normal text-purple-200">(${escapeHTML(it.label || `${it.days} วัน`)} x${it.qty})</span></p>`).join('')}
+              </div>
+              <p class="text-xs text-[#C7FFF3]">💬 LINE รับสินค้า: <strong>${escapeHTML(customerLine)}</strong></p>
+            </div>
+          </div>
+
+          <div class="relative z-10 sm:text-right border-t sm:border-t-0 border-white/20 pt-3 sm:pt-0 shrink-0">
+            <p class="text-xs text-purple-200">ยอดชำระ</p>
+            <p class="font-display font-bold text-3xl">฿${order.total.toLocaleString()}</p>
+          </div>
+        </div>
+
+        <!-- Timeline Card -->
+        <div class="jelly-card p-5 sm:p-6 grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+          <div class="md:col-span-8 space-y-3">
+            ${steps.map((step, idx) => {
+              const isDone = idx < currentIdx || (idx === steps.length - 1 && currentIdx === steps.length - 1);
+              const isCurrent = idx === currentIdx && !isDone;
+              return `
+                <div class="flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 font-bold text-sm border-2 ${
+                    isDone
+                      ? 'bg-emerald-500 border-emerald-200 text-white'
+                      : isCurrent
+                        ? 'bg-[#6D28D9] border-purple-200 text-white ring-4 ring-purple-200'
+                        : 'bg-white border-purple-200 text-purple-300'
+                  }">
+                    ${isDone ? '✓' : (isCurrent ? '●' : '○')}
+                  </div>
+
+                  <div class="flex-1 rounded-2xl px-4 py-3 flex items-center gap-3 border ${
+                    isCurrent
+                      ? 'bg-gradient-to-r from-[#7C3AED] to-[#5B21B6] text-white border-purple-300 shadow-md'
+                      : isDone
+                        ? 'bg-[#E6FFF9] text-[#31145E] border-[#A7F3D0]'
+                        : 'bg-purple-50/70 text-[#8A71B0] border-purple-100'
+                  }">
+                    <span class="text-xl">${step.icon}</span>
+                    <div class="min-w-0">
+                      <p class="font-display font-bold text-sm sm:text-base leading-tight">${step.title}</p>
+                      <p class="text-xs ${isCurrent ? 'text-purple-100' : 'opacity-80'}">${escapeHTML(step.desc)}</p>
+                    </div>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+
+          <div class="md:col-span-4 flex flex-col items-center text-center space-y-3">
+            <div class="w-36 h-32 animate-float">${getMascotSVG('parcel')}</div>
+            <button type="button" onclick="openAdminForOrder()"
+              class="px-4 py-2 rounded-full bg-purple-100 hover:bg-purple-200 text-[#4F2199] font-display font-bold text-xs transition">
+              ⚙️ ทดลองเปลี่ยนสถานะในหลังบ้าน
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function selectTrackedOrder(orderId) {
+      state.trackedOrderId = orderId;
+      renderRecentOrdersPage();
+    }
+
+    function searchOrderFromInput() {
+      const val = (document.getElementById('trackOrderInput')?.value || '').trim();
+      if (!val) {
+        showToast('กรุณากรอกเลขออเดอร์ที่ต้องการค้นหา', 'info');
+        return;
+      }
+      state.trackedOrderId = val.startsWith('#') ? val.toUpperCase() : `#${val.toUpperCase()}`;
+      renderRecentOrdersPage();
+    }
+
+    function clearTrackInput() {
+      const input = document.getElementById('trackOrderInput');
+      if (input) {
+        input.value = '';
+        input.focus();
+      }
+    }
+
+    function openAdminForOrder() {
+      state.adminTab = 'orders';
+      toggleAppMode();
+    }
+
+    /* ------------------------------------------------------------
+       13. PAGE 7: CONTACT & STORE RULES PAGE
+       ------------------------------------------------------------ */
+    const STORE_RULES = [
+      {
+        title: '1. ระยะเวลาการจัดส่งสินค้าหลังแจ้งโอน',
+        body: 'หลังลูกค้าแจ้งโอนและกรอกไอดีไลน์เรียบร้อย แอดมินจะตรวจสอบยอดและจัดส่งข้อมูลเข้าใช้งานภายใน 5–15 นาที ในช่วงเวลาทำการ 09:00–23:30 น.',
+      },
+      {
+        title: '2. ข้อห้ามในการใช้งานบัญชีพรีเมียม',
+        body: 'ห้ามเปลี่ยนรหัสผ่าน อีเมล หรือข้อมูลการชำระเงินของบัญชีที่ร้านจัดส่งให้ หากตรวจพบการเปลี่ยนแปลงข้อมูล ร้านขอสงวนสิทธิ์สิ้นสุดการรับประกันทันที',
+      },
+      {
+        title: '3. เงื่อนไขการเคลมและการรับประกัน',
+        body: 'รับประกันตลอดอายุแพ็กเกจที่สั่งซื้อ (30 วัน / 90 วัน) หากพบปัญหาเข้าใช้งานไม่ได้ กรุณาแคปหน้าจอแจ้งแอดมินผ่าน LINE พร้อมเลขออเดอร์เพื่อเปลี่ยนบัญชีใหม่ให้ฟรี',
+      },
+      {
+        title: '4. นโยบายการคืนเงิน',
+        body: 'เมื่อจัดส่งข้อมูลเข้าใช้งานเรียบร้อยแล้ว ไม่สามารถขอคืนเงินได้ ยกเว้นกรณีที่ร้านไม่สามารถจัดหาสินค้าหรือแก้ไขปัญหาให้ลูกค้าได้ภายใน 24 ชั่วโมง',
+      },
+    ];
+
+    function renderContactPage() {
+      const openHoursBadge = document.getElementById('contactOpenHoursBadge');
+      if (openHoursBadge) {
+        openHoursBadge.textContent = `เวลาทำการ: ${state.settings.openHours || 'ทุกวัน 09:00 - 23:30 น.'}`;
+      }
+
+      const channels = [
+        {
+          icon: '💬',
+          badgeBg: 'bg-emerald-100 text-emerald-700',
+          name: 'LINE Official',
+          value: state.settings.lineOfficial || '@jelly.arcade.demo',
+          desc: 'ติดต่อสั่งซื้อ แจ้งปัญหา และเคลมแอป',
+          url: state.settings.lineUrl || 'https://line.me/R/ti/p/@jelly.arcade.demo',
+        },
+        {
+          icon: '📱',
+          badgeBg: 'bg-pink-100 text-pink-700',
+          name: state.settings.socialName || 'Instagram ร้าน',
+          value: state.settings.socialHandle || '@jelly.arcade.shop',
+          desc: 'ติดตามโปรโมชั่นและรีวิวจากลูกค้า',
+          url: state.settings.socialUrl || 'https://instagram.com',
+        },
+      ];
+
+      document.getElementById('contactChannelsGrid').innerHTML = channels.map(ch => `
+        <a href="${escapeHTML(ch.url)}" target="_blank" rel="noopener noreferrer"
+          class="jelly-card p-4 sm:p-5 flex items-center justify-between gap-3 hover:-translate-y-0.5 hover:border-purple-300 transition group">
+          <div class="flex items-center gap-3.5 min-w-0">
+            <div class="w-12 h-12 rounded-2xl ${ch.badgeBg} text-2xl flex items-center justify-center shrink-0 shadow-sm">${ch.icon}</div>
+            <div class="min-w-0 space-y-0.5">
+              <p class="font-display font-bold text-sm sm:text-base text-[#31145E] group-hover:text-[#6227B8] transition">${escapeHTML(ch.name)}</p>
+              <p class="font-display font-semibold text-sm text-[#6227B8] truncate">${escapeHTML(ch.value)}</p>
+              <p class="text-xs text-[#6E5596] truncate">${escapeHTML(ch.desc)}</p>
+            </div>
+          </div>
+          <span class="w-9 h-9 rounded-full bg-purple-100 group-hover:bg-[#6227B8] text-[#6227B8] group-hover:text-white flex items-center justify-center shrink-0 transition font-bold">
+            ↗
+          </span>
+        </a>
+      `).join('');
+
+      document.getElementById('storeRulesAccordion').innerHTML = STORE_RULES.map((rule, idx) => {
+        const isOpen = state.openRuleIndex === idx;
+        return `
+          <div class="jelly-card overflow-hidden">
+            <button type="button" onclick="toggleRule(${idx})"
+              class="w-full px-5 py-4 flex items-center justify-between gap-3 text-left hover:bg-purple-50/60 transition">
+              <span class="font-display font-bold text-sm sm:text-base text-[#31145E]">${escapeHTML(rule.title)}</span>
+              <span class="w-7 h-7 rounded-full bg-purple-100 text-[#6227B8] flex items-center justify-center font-bold text-xs shrink-0 transition-transform ${isOpen ? 'rotate-180' : ''}">
+                ▼
+              </span>
+            </button>
+            <div class="${isOpen ? 'block' : 'hidden'} px-5 pb-4 pt-0 text-xs sm:text-sm text-[#5A3B8C] leading-relaxed border-t border-purple-100/80">
+              <p class="pt-3">${escapeHTML(rule.body)}</p>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function toggleRule(idx) {
+      state.openRuleIndex = state.openRuleIndex === idx ? -1 : idx;
+      renderContactPage();
+    }
+
+    /* ------------------------------------------------------------
+       14. ADMIN PANEL LOGIC (DEMO BACKEND)
+       ------------------------------------------------------------ */
+    function setAdminTab(tab) {
+      state.adminTab = tab;
+      renderAdminView();
+    }
+
+    function setAdminOrderFilter(filter) {
+      state.adminOrderFilter = filter;
+      renderAdminOrders();
+    }
+
+    function renderAdminView() {
+      // KPI Stats
+      const totalOrders = state.orders.length;
+      const pendingCount = state.orders.filter(o => o.status !== 'delivered').length;
+      const revenue = state.orders.reduce((s, o) => s + o.total, 0);
+      const totalApps = state.apps.length;
+
+      document.getElementById('adminStatsGrid').innerHTML = `
+        <div class="jelly-card p-4">
+          <p class="text-xs text-[#6E5596]">ออเดอร์ทั้งหมด</p>
+          <p class="font-display font-bold text-2xl text-[#31145E] mt-0.5">${totalOrders}</p>
+        </div>
+        <div class="jelly-card p-4">
+          <p class="text-xs text-[#6E5596]">รอตรวจสอบ/ส่งมอบ</p>
+          <p class="font-display font-bold text-2xl text-amber-600 mt-0.5">${pendingCount}</p>
+        </div>
+        <div class="jelly-card p-4">
+          <p class="text-xs text-[#6E5596]">ยอดขายจำลองรวม</p>
+          <p class="font-display font-bold text-2xl text-[#6227B8] mt-0.5">฿${revenue.toLocaleString()}</p>
+        </div>
+        <div class="jelly-card p-4">
+          <p class="text-xs text-[#6E5596]">แอปในร้าน</p>
+          <p class="font-display font-bold text-2xl text-emerald-600 mt-0.5">${totalApps}</p>
+        </div>
+      `;
+
+      // Tab buttons & sections
+      ['orders', 'apps', 'settings'].forEach(t => {
+        const btn = document.getElementById(`adminTab-${t}`);
+        const sec = document.getElementById(`adminSection-${t}`);
+        if (t === state.adminTab) {
+          btn.classList.add('bg-[#6227B8]', 'text-white', 'shadow');
+          btn.classList.remove('text-[#5A3B8C]', 'hover:bg-purple-50');
+          sec.classList.remove('hidden');
+        } else {
+          btn.classList.remove('bg-[#6227B8]', 'text-white', 'shadow');
+          btn.classList.add('text-[#5A3B8C]', 'hover:bg-purple-50');
+          sec.classList.add('hidden');
+        }
+      });
+
+      if (state.adminTab === 'orders') renderAdminOrders();
+      if (state.adminTab === 'apps') renderAdminApps();
+      if (state.adminTab === 'settings') renderAdminSettings();
+    }
+
+    function renderAdminOrders() {
+      const filters = [
+        { id: 'all', label: 'ทั้งหมด' },
+        { id: 'pending_verify', label: 'รอตรวจชำระ' },
+        { id: 'delivered', label: 'ส่งมอบแล้ว' },
+      ];
+
+      document.getElementById('adminOrderFilterBar').innerHTML = filters.map(f => `
+        <button type="button" onclick="setAdminOrderFilter('${f.id}')"
+          class="px-4 py-1.5 rounded-full font-display font-semibold text-xs shrink-0 transition border ${
+            state.adminOrderFilter === f.id
+              ? 'bg-[#6227B8] text-white border-white shadow'
+              : 'bg-white text-[#5A3B8C] border-purple-200 hover:bg-purple-50'
+          }">
+          ${f.label}
+        </button>
+      `).join('');
+
+      const list = state.orders.filter(o => state.adminOrderFilter === 'all' || o.status === state.adminOrderFilter);
+      const container = document.getElementById('adminOrdersList');
+
+      if (list.length === 0) {
+        container.innerHTML = `<div class="jelly-card p-8 text-center text-sm text-[#6E5596]">ไม่มีออเดอร์ในตัวกรองนี้</div>`;
+        return;
+      }
+
+      container.innerHTML = list.map(o => {
+        const customerName = o.customerName || 'ลูกค้า';
+        const customerLine = o.customerLineId || o.customerEmail || '-';
+        return `
+          <div class="jelly-card p-4 sm:p-5 space-y-3">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-purple-100">
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="font-display font-bold text-lg text-[#31145E]">${escapeHTML(o.id)}</span>
+                <span class="px-2.5 py-0.5 rounded-full text-[11px] font-display font-bold ${o.isSample ? 'bg-purple-100 text-[#6227B8]' : 'bg-emerald-100 text-emerald-700'}">
+                  ${o.isSample ? 'ข้อมูลตัวอย่าง' : 'สร้างใหม่ (Demo)'}
+                </span>
+                <span class="text-xs text-[#6E5596]">👤 <strong>${escapeHTML(customerName)}</strong> • LINE: <strong>${escapeHTML(customerLine)}</strong></span>
+              </div>
+              <span class="font-display font-bold text-xl text-[#6227B8]">฿${o.total.toLocaleString()}</span>
+            </div>
+
+            <div class="flex flex-wrap gap-2 text-xs text-[#5A3B8C]">
+              ${o.items.map(it => `<span class="px-2.5 py-1 rounded-full bg-purple-50 border border-purple-200">${escapeHTML(it.name)} (${escapeHTML(it.label || `${it.days} วัน`)} x${it.qty})</span>`).join('')}
+            </div>
+
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
+              <div class="flex flex-wrap items-center gap-2">
+                <button type="button" onclick="openSlipPreviewModal('${o.id}')"
+                  class="px-4 py-2 rounded-full bg-purple-100 hover:bg-purple-200 text-[#4F2199] font-display font-bold text-xs transition inline-flex items-center justify-center gap-1.5">
+                  🖼️ ดูสลิป (${escapeHTML(o.slipName || 'slip.png')})
+                </button>
+                <button type="button" onclick="openDeleteOrderModal('${o.id}')"
+                  class="px-3.5 py-2 rounded-full bg-rose-50 hover:bg-rose-100 text-rose-600 font-display font-bold text-xs transition inline-flex items-center justify-center gap-1">
+                  🗑️ ลบออเดอร์
+                </button>
+              </div>
+
+              <div class="flex items-center gap-2">
+                <label class="text-xs font-display font-semibold text-[#5A3B8C] shrink-0">สถานะ:</label>
+                <select onchange="updateOrderStatus('${o.id}', this.value)"
+                  class="px-3 py-2 rounded-xl bg-purple-50 border border-purple-300 text-xs sm:text-sm font-display font-semibold text-[#31145E] focus:outline-none focus:border-[#7C3AED]">
+                  <option value="ordered" ${o.status === 'ordered' ? 'selected' : ''}>1. สั่งซื้อแล้ว</option>
+                  <option value="slip_attached" ${o.status === 'slip_attached' ? 'selected' : ''}>2. แนบสลิปแล้ว</option>
+                  <option value="pending_verify" ${o.status === 'pending_verify' ? 'selected' : ''}>3. รอตรวจชำระ</option>
+                  <option value="delivered" ${o.status === 'delivered' ? 'selected' : ''}>4. ส่งมอบแล้ว</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function updateOrderStatus(orderId, newStatus) {
+      const order = state.orders.find(o => o.id === orderId);
+      if (!order) return;
+      order.status = newStatus;
+      if (newStatus === 'delivered') {
+        order.timestamps.delivered = `ส่งมอบผ่าน LINE แล้ว (${formatNowTime()})`;
+      } else if (newStatus === 'pending_verify') {
+        order.timestamps.pending_verify = 'กำลังตรวจสอบการชำระเงิน';
+      }
+      saveStateToStorage();
+      renderAdminView();
+      showToast(`อัปเดตสถานะออเดอร์ ${orderId} เรียบร้อย (Demo)`, 'success');
+    }
+
+    function openSlipPreviewModal(orderId) {
+      const order = state.orders.find(o => o.id === orderId);
+      if (!order) return;
+      document.getElementById('slipModalTitle').textContent = `สลิปออเดอร์ ${order.id}`;
+      document.getElementById('slipModalImage').src = order.slipDataUrl || DEMO_SLIP_PLACEHOLDER;
+      document.getElementById('slipModalCaption').textContent = `ไฟล์: ${order.slipName || 'demo-slip.png'} • ยอด ฿${order.total.toLocaleString()}`;
+      document.getElementById('slipModal').classList.remove('hidden');
+    }
+
+    function closeSlipPreviewModal() {
+      document.getElementById('slipModal').classList.add('hidden');
+    }
+
+    function openDeleteOrderModal(orderId) {
+      state.pendingDeleteOrderId = orderId;
+      const textEl = document.getElementById('deleteOrderConfirmText');
+      if (textEl) {
+        textEl.textContent = `ต้องการลบออเดอร์ ${orderId} ออกจากระบบ Demo ใช่หรือไม่?`;
+      }
+      document.getElementById('deleteOrderConfirmModal')?.classList.remove('hidden');
+    }
+
+    function closeDeleteOrderModal() {
+      state.pendingDeleteOrderId = null;
+      document.getElementById('deleteOrderConfirmModal')?.classList.add('hidden');
+    }
+
+    function confirmDeleteOrder() {
+      const orderId = state.pendingDeleteOrderId;
+      closeDeleteOrderModal();
+      if (!orderId) return;
+
+      state.orders = state.orders.filter(o => o.id !== orderId);
+      if (state.trackedOrderId === orderId) {
+        state.trackedOrderId = state.orders[0]?.id || '';
+      }
+      saveStateToStorage();
+      renderAdminView();
+      showToast(`ลบออเดอร์ ${orderId} เรียบร้อยแล้ว (Demo)`, 'info');
+    }
+
+    function renderAdminPackageRows() {
+      const editor = document.getElementById('adminPackagesEditor');
+      if (!editor) return;
+
+      editor.innerHTML = state.adminFormPackages.map((pkg, idx) => `
+        <div class="grid grid-cols-12 gap-2 items-center bg-purple-50/70 border border-purple-200/80 rounded-2xl p-2.5">
+          <div class="col-span-6 sm:col-span-6">
+            <label class="block text-[11px] font-display font-semibold text-[#5A3B8C] mb-1">ชื่อแพ็กเกจ / ระยะเวลา</label>
+            <input type="text" required value="${escapeHTML(pkg.label)}" placeholder="เช่น 7 วัน, 30 วัน, 1 ปี"
+              oninput="updateAdminPackageRow(${idx}, 'label', this.value)"
+              class="w-full px-3 py-2 rounded-xl bg-white border border-purple-200 text-xs sm:text-sm focus:outline-none focus:border-[#7C3AED]" />
+          </div>
+          <div class="col-span-4 sm:col-span-4">
+            <label class="block text-[11px] font-display font-semibold text-[#5A3B8C] mb-1">ราคา (บาท)</label>
+            <input type="number" min="1" required value="${escapeHTML(pkg.price)}" placeholder="99"
+              oninput="updateAdminPackageRow(${idx}, 'price', this.value)"
+              class="w-full px-3 py-2 rounded-xl bg-white border border-purple-200 text-xs sm:text-sm focus:outline-none focus:border-[#7C3AED]" />
+          </div>
+          <div class="col-span-2 flex justify-end pt-5">
+            <button type="button" onclick="removeAdminPackageRow(${idx})" title="ลบแพ็กเกจนี้"
+              class="w-9 h-9 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 flex items-center justify-center font-bold text-sm transition">
+              ✕
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function updateAdminPackageRow(idx, field, value) {
+      if (!state.adminFormPackages[idx]) return;
+      state.adminFormPackages[idx][field] = value;
+    }
+
+    function addAdminPackageRow() {
+      state.adminFormPackages.push({ label: '', price: '' });
+      renderAdminPackageRows();
+    }
+
+    function removeAdminPackageRow(idx) {
+      if (state.adminFormPackages.length <= 1) {
+        showToast('ต้องมีอย่างน้อย 1 แพ็กเกจ', 'error');
+        return;
+      }
+      state.adminFormPackages.splice(idx, 1);
+      renderAdminPackageRows();
+    }
+
+    function syncAdminAppFormHeader() {
+      const titleEl = document.getElementById('adminAppFormTitle');
+      const submitBtn = document.getElementById('adminAppSubmitBtn');
+      const cancelBtn = document.getElementById('cancelEditAppBtn');
+      if (!titleEl || !submitBtn || !cancelBtn) return;
+
+      if (state.editingAppId) {
+        const editingApp = state.apps.find(a => a.id === state.editingAppId);
+        titleEl.textContent = `✏️ แก้ไขแอป: ${editingApp ? editingApp.name : ''}`;
+        submitBtn.textContent = '💾 บันทึกการแก้ไข (Demo)';
+        cancelBtn.classList.remove('hidden');
+      } else {
+        titleEl.textContent = '➕ เพิ่มแอปใหม่ (Demo)';
+        submitBtn.textContent = '➕ บันทึกแอปใหม่ลงหน้าร้าน (Demo)';
+        cancelBtn.classList.add('hidden');
+      }
+    }
+
+    function startEditApp(appId) {
+      const app = state.apps.find(a => a.id === appId);
+      if (!app) return;
+
+      state.editingAppId = app.id;
+      document.getElementById('newAppName').value = app.name;
+      document.getElementById('newAppCategory').value = app.category;
+      document.getElementById('newAppTheme').value = app.theme;
+      document.getElementById('newAppFeatured').checked = Boolean(app.featured);
+
+      state.adminFormPackages = (app.packages && app.packages.length ? app.packages : [{ label: '30 วัน', price: 99 }])
+        .map(p => ({ label: p.label || `${p.days} วัน`, price: p.price }));
+
+      syncAdminAppFormHeader();
+      renderAdminPackageRows();
+
+      const formEl = document.getElementById('adminAppForm');
+      if (formEl) formEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      showToast(`กำลังแก้ไข "${app.name}"`, 'info');
+    }
+
+    function cancelEditApp() {
+      state.editingAppId = null;
+      const formEl = document.getElementById('adminAppForm');
+      if (formEl) formEl.reset();
+      document.getElementById('newAppFeatured').checked = true;
+      state.adminFormPackages = [
+        { label: '30 วัน', price: 79 },
+        { label: '90 วัน', price: 199 },
+      ];
+      syncAdminAppFormHeader();
+      renderAdminPackageRows();
+    }
+
+    function renderAdminApps() {
+      syncAdminAppFormHeader();
+      renderAdminPackageRows();
+
+      document.getElementById('adminAppsList').innerHTML = state.apps.map(app => {
+        const pkgSummary = (app.packages || [])
+          .map(p => `${escapeHTML(p.label || `${p.days} วัน`)} ฿${p.price}`)
+          .join(' / ');
+        return `
+          <div class="jelly-card p-4 flex items-center justify-between gap-3 ${state.editingAppId === app.id ? 'ring-2 ring-[#7C3AED]' : ''}">
+            <div class="flex items-center gap-3 min-w-0">
+              ${getAppIconSVG(app.theme, 'w-12 h-12')}
+              <div class="min-w-0">
+                <p class="font-display font-bold text-base text-[#31145E] truncate">${escapeHTML(app.name)}</p>
+                <p class="text-xs text-[#6E5596] line-clamp-2">หมวด${escapeHTML(app.category)} • ${pkgSummary}</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-1.5 shrink-0">
+              <button type="button" onclick="startEditApp('${app.id}')" title="แก้ไขแอป"
+                class="px-2.5 py-1.5 rounded-xl bg-purple-100 hover:bg-purple-200 text-[#4F2199] text-xs font-display font-bold transition">
+                ✏️ แก้ไข
+              </button>
+              <button type="button" onclick="toggleAppFeatured('${app.id}')" title="สลับแสดงในรายการโปรโมชั่น"
+                class="px-2.5 py-1.5 rounded-xl text-xs font-display font-bold transition ${
+                  app.featured ? 'bg-amber-100 text-amber-800' : 'bg-purple-50 text-purple-400'
+                }">
+                ${app.featured ? '🔥 โปร' : 'ปกติ'}
+              </button>
+              <button type="button" onclick="deleteApp('${app.id}')" title="ลบแอป"
+                class="w-8 h-8 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 flex items-center justify-center transition">
+                🗑️
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function submitNewApp(event) {
+      event.preventDefault();
+      const name = document.getElementById('newAppName').value.trim();
+      const category = document.getElementById('newAppCategory').value;
+      const theme = document.getElementById('newAppTheme').value;
+      const featured = document.getElementById('newAppFeatured').checked;
+
+      if (!name) return;
+
+      const parsedPackages = state.adminFormPackages
+        .map((p, idx) => {
+          const label = String(p.label || '').trim();
+          const price = parseInt(p.price, 10);
+          const numericDays = parseInt(label.replace(/[^\d]/g, ''), 10);
+          return {
+            days: !isNaN(numericDays) && numericDays > 0 ? numericDays : (idx + 1) * 30,
+            label,
+            price,
+          };
+        })
+        .filter(p => p.label && !isNaN(p.price) && p.price > 0);
+
+      if (parsedPackages.length === 0) {
+        showToast('กรุณากรอกชื่อแพ็กเกจและราคาให้ครบอย่างน้อย 1 แพ็กเกจ', 'error');
+        return;
+      }
+
+      if (state.editingAppId) {
+        const target = state.apps.find(a => a.id === state.editingAppId);
+        if (target) {
+          target.name = name;
+          target.category = category;
+          target.theme = theme;
+          target.featured = featured;
+          target.packages = parsedPackages;
+        }
+        saveStateToStorage();
+        cancelEditApp();
+        renderAdminView();
+        showToast(`บันทึกการแก้ไข "${name}" เรียบร้อยแล้ว (Demo)`, 'success');
+        return;
+      }
+
+      const newApp = {
+        id: 'app-' + Date.now(),
+        name,
+        category,
+        badge: 'พรีเมียม',
+        theme,
+        featured,
+        isSample: false,
+        packages: parsedPackages,
+        features: [
+          { icon: '✨', title: 'ใช้งานระดับพรีเมียมเต็มรูปแบบ', desc: 'พร้อมรับประกันตลอดอายุการใช้งาน' },
+          { icon: '💬', title: 'จัดส่งไวผ่าน LINE ID', desc: 'มีแอดมินดูแลตลอดการใช้งาน' },
+        ],
+      };
+
+      state.apps.unshift(newApp);
+      saveStateToStorage();
+      cancelEditApp();
+      renderAdminView();
+      showToast(`เพิ่มแอป "${name}" ลงหน้าร้านแล้ว (Demo)`, 'success');
+    }
+
+    function toggleAppFeatured(appId) {
+      const app = state.apps.find(a => a.id === appId);
+      if (!app) return;
+      app.featured = !app.featured;
+      saveStateToStorage();
+      renderAdminApps();
+      showToast(app.featured ? `เพิ่ม ${app.name} เข้ารายการโปรโมชั่นแล้ว` : `นำ ${app.name} ออกจากรายการโปรโมชั่นแล้ว`, 'info');
+    }
+
+    function deleteApp(appId) {
+      if (state.apps.length <= 1) {
+        showToast('ต้องมีแอปอย่างน้อย 1 รายการในร้าน', 'error');
+        return;
+      }
+      if (state.editingAppId === appId) {
+        cancelEditApp();
+      }
+      state.apps = state.apps.filter(a => a.id !== appId);
+      state.cart = state.cart.filter(c => c.appId !== appId);
+      saveStateToStorage();
+      renderAdminView();
+      showToast('ลบแอปเรียบร้อยแล้ว (Demo)', 'info');
+    }
+
+    function renderAdminSettings() {
+      document.getElementById('settingBankName').value = state.settings.bankName || '';
+      document.getElementById('settingAccountNumber').value = state.settings.accountNumber || '';
+      document.getElementById('settingAccountName').value = state.settings.accountName || '';
+      document.getElementById('settingLineOfficial').value = state.settings.lineOfficial || '';
+      document.getElementById('settingLineUrl').value = state.settings.lineUrl || '';
+      document.getElementById('settingSocialUrl').value = state.settings.socialUrl || '';
+    }
+
+    function saveStoreSettings(event) {
+      event.preventDefault();
+      state.settings.bankName = document.getElementById('settingBankName').value.trim();
+      state.settings.accountNumber = document.getElementById('settingAccountNumber').value.trim();
+      state.settings.accountName = document.getElementById('settingAccountName').value.trim();
+      state.settings.lineOfficial = document.getElementById('settingLineOfficial').value.trim();
+      state.settings.lineUrl = document.getElementById('settingLineUrl').value.trim();
+      state.settings.socialUrl = document.getElementById('settingSocialUrl').value.trim();
+      saveStateToStorage();
+      showToast('บันทึกการตั้งค่าร้านเรียบร้อยแล้ว (Demo)', 'success');
+    }
+
+    function resetDemoData() {
+      try {
+        localStorage.removeItem(STORAGE_KEY);
+        localStorage.removeItem(WELCOME_HIDE_KEY);
+      } catch (err) {
+        console.warn(err);
+      }
+      state.settings = deepClone(SEED_SETTINGS);
+      state.apps = deepClone(SEED_APPS);
+      state.cart = deepClone(SEED_CART);
+      state.orders = deepClone(SEED_ORDERS);
+      state.trackedOrderId = '#JA1032';
+      state.bannerIndex = 0;
+      renderAdminView();
+      renderCustomerPage();
+      showToast('รีเซ็ตข้อมูลจำลองกลับเป็นค่าเริ่มต้นเรียบร้อยแล้ว', 'success');
+    }
+
+    /* ------------------------------------------------------------
+       15. SPLASH LOADING SCREEN & WELCOME POPUP FLOW
+       ------------------------------------------------------------ */
+    let splashTimerId = null;
+    let splashForceWelcome = false;
+
+    function startSplashLoader(forceWelcomeAfter = false) {
+      const loader = document.getElementById('splashLoader');
+      const mascotSlot = document.getElementById('splashMascotSlot');
+      const bar = document.getElementById('splashProgressBar');
+      const pctText = document.getElementById('splashPercentText');
+      const statusText = document.getElementById('splashStatusText');
+      if (!loader) {
+        openWelcomeModal(forceWelcomeAfter);
+        return;
+      }
+
+      if (splashTimerId) {
+        clearInterval(splashTimerId);
+        splashTimerId = null;
+      }
+
+      splashForceWelcome = forceWelcomeAfter;
+      if (mascotSlot) mascotSlot.innerHTML = getMascotSVG('tablet');
+
+      loader.classList.remove('hidden', 'opacity-0', 'pointer-events-none');
+      loader.classList.add('opacity-100');
+
+      let progress = 12;
+      if (bar) bar.style.width = `${progress}%`;
+      if (pctText) pctText.textContent = `${progress}%`;
+      if (statusText) statusText.textContent = 'กำลังโหลดร้านแอปพรีเมียม...';
+
+      splashTimerId = setInterval(() => {
+        progress = Math.min(100, progress + Math.floor(Math.random() * 18) + 12);
+        if (bar) bar.style.width = `${progress}%`;
+        if (pctText) pctText.textContent = `${progress}%`;
+
+        if (progress >= 60 && progress < 100 && statusText) {
+          statusText.textContent = 'กำลังเตรียมรายการโปรโมชั่นและหมวดหมู่...';
+        }
+        if (progress >= 100) {
+          if (statusText) statusText.textContent = 'พร้อมใช้งานแล้ว!';
+          clearInterval(splashTimerId);
+          splashTimerId = null;
+          setTimeout(() => finishSplashLoader(), 220);
+        }
+      }, 140);
+    }
+
+    function finishSplashLoader() {
+      if (splashTimerId) {
+        clearInterval(splashTimerId);
+        splashTimerId = null;
+      }
+      const loader = document.getElementById('splashLoader');
+      if (!loader) {
+        openWelcomeModal(splashForceWelcome);
+        return;
+      }
+      loader.classList.add('opacity-0', 'pointer-events-none');
+      setTimeout(() => {
+        loader.classList.add('hidden');
+        openWelcomeModal(splashForceWelcome);
+      }, 360);
+    }
+
+    function openWelcomeModal(force = false) {
+      const modal = document.getElementById('welcomeModal');
+      if (!modal) return;
+
+      if (!force) {
+        try {
+          const today = new Date().toISOString().slice(0, 10);
+          if (localStorage.getItem(WELCOME_HIDE_KEY) === today) return;
+        } catch (err) {
+          console.warn(err);
+        }
+      }
+      modal.classList.remove('hidden');
+    }
+
+    function closeWelcomeModal() {
+      const modal = document.getElementById('welcomeModal');
+      const checkbox = document.getElementById('hideWelcomeTodayCheckbox');
+      if (checkbox && checkbox.checked) {
+        try {
+          const today = new Date().toISOString().slice(0, 10);
+          localStorage.setItem(WELCOME_HIDE_KEY, today);
+        } catch (err) {
+          console.warn(err);
+        }
+      }
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function setupSlipDragAndDrop() {
+      const dropZone = document.getElementById('slipDropZone');
+      if (!dropZone) return;
+
+      ['dragenter', 'dragover'].forEach(evtName => {
+        dropZone.addEventListener(evtName, e => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropZone.classList.add('border-[#7C3AED]', 'bg-purple-100/70');
+        });
+      });
+
+      ['dragleave', 'drop'].forEach(evtName => {
+        dropZone.addEventListener(evtName, e => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropZone.classList.remove('border-[#7C3AED]', 'bg-purple-100/70');
+        });
+      });
+
+      dropZone.addEventListener('drop', e => {
+        const files = e.dataTransfer?.files;
+        if (files && files.length > 0) {
+          handleSlipFile({ target: { files } });
+        }
+      });
+    }
+
+    /* ------------------------------------------------------------
+       16. INITIALIZATION
+       ------------------------------------------------------------ */
+    function initApp() {
+      try {
+        loadStateFromStorage();
+        setupSlipDragAndDrop();
+        renderCustomerPage();
+        startSplashLoader(false);
+      } catch (err) {
+        console.error('Initialization error:', err);
+        document.getElementById('splashLoader')?.classList.add('hidden');
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initApp);
+    } else {
+      initApp();
+    }
+  </script>
+</body>
+</html>
